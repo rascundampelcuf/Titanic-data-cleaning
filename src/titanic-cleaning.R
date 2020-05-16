@@ -5,7 +5,7 @@ date: "Maig 2020"
 ---
 
 ## ----load_libraries, include=FALSE---------------------------------------
-#library(knitr)
+library(knitr)
 library(ggplot2)
 library(dplyr)
 install.packages("modeest") 
@@ -23,19 +23,15 @@ if(!require(gridExtra)){
   library(gridExtra)
 }
 
-
 ##----1. DESCRIPCIÓ del DATASET-------------------------------------------
 #Read data 
 titanic_train <- read.csv("../data/train.csv")
 titanic_test <- read.csv("../data/test.csv")
-#El dataset escollit recollir informació 
+#El dataset escollit recollir informació dels passatgers del titanic, en els que es pot analitzar la superviència i les característiques d'aquests. 
+#Les dades del titanic contenen una barreja de variables textuals, booleanes, continues i categòriques. El dataset compte amb valors perduts, valors extrems i altres carectreístiques interessants que caldrà tractar. 
 
-
-
-
-
-#2. INTEGRACIÓ dades
-##La base de dades està dividia en tres parts, la part de test té 418 registres i 11 variables, mentre que la de train té 891 observacions i 12 variables, la variable que no té el dataset test, és la variable Survived.
+##----2. INTEGRACIÓ -----------------------------------------------------
+##La base de dades està dividia en tres parts, la part de test té 418 registres i 11 variables, mentre que la de train té 891 observacions i 12 variables, la variable que no té el dataset test, és la variable Survived, que tenim en el fitxre anomenat gender..
 ##A continuació hem integrat les tres parts, en un sol dataset. 
 dim(titanic_test)
 dim(titanic_train)
@@ -49,13 +45,13 @@ str(titanic_data)
 dim(titanic_data)
 summary(titanic_data)
 
-#3. NETEJA DE DADES:
-#Atributs amb valors buits: 
+##----3. NETEJA DE DADES------------------------------------------------
+# 3.1 Atributs amb valors buits: 
 colSums(is.na(titanic_data))
 colSums(titanic_data== "")
 
 #Tractament valors buits variable "Embarked": 
-##Ens basarem en usar una mesura de tendència central,en aquest cas al ser una variable categòrica usarem la moda 
+#Ens basarem en usar una mesura de tendència central,en aquest cas al ser una variable categòrica usarem la moda 
 mlv(titanic_data$Embarked, method = "mfv") 
 ##El ser S la moda: prenem el valor "S" per els valors buits de la variable.
 titanic_data$Embarked[titanic_data$Embarked==""]="C"
@@ -65,20 +61,16 @@ titanic_data[!complete.cases(titanic_data$Fare),]
 titanic_data$Fare[1044] <- median(titanic_data$Fare, na.rm = TRUE)
 #Variable Cabin: la suprimirem**
 
-#Comprovació 
-colSums(titanic_data== "")
-
 
 #Opció1:Edat
 # Prenem la mitjana per a valors buits de la variable "Age" 
 #titanic_data$Age[is.na(titanic_data$Age)] <- mean(titanic_data$Age,na.rm=T)
 
+#3.2Valors Extrems
 
 
 
-
-#ANÀLISIS RELACIONS VARIABLES
-
+##4----ANÀLISIS RELACIONS VARIABLES--------------------------------------
 ##¿Quants passatgers van sobreviure?
 table(titanic_data$Survived)
 prop.table(table(titanic_data$Survived))
@@ -95,18 +87,5 @@ ggplot(data=titanic_data,aes(x=Sex,fill=Survived), colour="red")+geom_bar()
 # Un altre punt de vista. Survival com a funció de Embarked:
 ggplot(data = titanic_data,aes(x=Embarked,fill=Survived))+geom_bar(position="fill")+ylab("Frequència")
 
-
-head(titanic_data,1)
-
-
-
-grid.newpage()
-ggplot(titanic_data,aes(CLASS,fill=SURVIVED))+geom_bar() +labs(x="Class", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Class")
-plotbyAge<-ggplot(titanic_data,aes(AGE,fill=SURVIVED))+geom_bar() +labs(x="Age", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Age")
-plotbySex<-ggplot(titanic_data,aes(SEX,fill=SURVIVED))+geom_bar() +labs(x="Sex", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Sex")
-grid.arrange(plotbyClass,plotbyAge,plotbySex,ncol=2)
-
-plotbyClass
-```
 
 
