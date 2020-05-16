@@ -27,16 +27,19 @@ dim(titanic_data)
 summary(titanic_data)
 
 #3. NETEJA DE DADES:
-##Atributs amb valors buits: 
+#Atributs amb valors buits: 
 colSums(is.na(titanic_data))
 colSums(titanic_data== "")
 
-##Tractament valors buits variable "Embarked": 
+#Tractament valors buits variable "Embarked": 
 ##Ens basarem en usar una mesura de tendència central,en aquest cas al ser una variable categòrica usarem la moda 
 mlv(titanic_data$Embarked, method = "mfv") 
-#El ser S la moda: prenem el valor "S" per els valors buits de la variable.
+##El ser S la moda: prenem el valor "S" per els valors buits de la variable.
 titanic_data$Embarked[titanic_data$Embarked==""]="C"
 
+#Tractament del valor Fare, mitjançant la mediana:
+titanic_data[!complete.cases(titanic_data$Fare),]
+titanic_data$Fare[1044] <- median(titanic_data$Fare, na.rm = TRUE)
 #Variable Cabin: la suprimirem**
 
 #Comprovació 
