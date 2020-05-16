@@ -1,8 +1,3 @@
----
-title: 'Respostes: PRAC2 - Tipologia i Cicle de Vida de les Dades'
-author: "Autor: GABRIEL IZQUIERDO I MIREIA OLIVELLA"
-date: "Maig 2020"
----
 ## ----load_libraries, include=FALSE---------------------------------------
 library(knitr)
 library(ggplot2)
@@ -21,15 +16,16 @@ if(!require(gridExtra)){
   install.packages('gridExtra', repos='http://cran.us.r-project.org')
   library(gridExtra)
 }
+## ---- echo=TRUE----------------------------------------------------------
 
 ##----1. DESCRIPCIÃ“ del DATASET-------------------------------------------
-
-## ---- echo=TRUE----------------------------------------------------------
-# read data
-titanic_train <- read.csv("../data/train.csv")
-titanic_test <- read.csv("../data/test.csv")
 #El dataset escollit recollir informaciÃ³ dels passatgers del titanic, en els que es pot analitzar la superviÃ¨ncia i les caracterÃ­stiques d'aquests. 
 #Les dades del titanic contenen una barreja de variables textuals, booleanes, continues i categÃ²riques. El dataset compte amb valors perduts, valors extrems i altres carectreÃ­stiques interessants que caldrÃ  tractar. 
+
+#read Data
+titanic_train <- read.csv("../data/train.csv")
+titanic_test <- read.csv("../data/test.csv")
+## ---- echo=TRUE----------------------------------------------------------
 
 ##----2. INTEGRACIÃ“ -----------------------------------------------------
 ##La base de dades estÃ  dividia en tres parts, la part de test tÃ© 418 registres i 11 variables, mentre que la de train tÃ© 891 observacions i 12 variables, la variable que no tÃ© el dataset test, Ã©s la variable Survived, que tenim en el fitxre anomenat gender_submission.
@@ -46,6 +42,9 @@ str(titanic_data)
 dim(titanic_data)
 summary(titanic_data)
 
+## ---- echo=TRUE----------------------------------------------------------
+
+
 ##----3. NETEJA DE DADES------------------------------------------------
 # 3.1 Atributs amb valors buits: 
 colSums(is.na(titanic_data))
@@ -60,42 +59,6 @@ titanic_data$Embarked[titanic_data$Embarked==""]="C"
 #Tractament del valor Fare, mitjanÃ§ant la mediana:
 titanic_data[!complete.cases(titanic_data$Fare),]
 titanic_data$Fare[1044] <- median(titanic_data$Fare, na.rm = TRUE)
-#Variable Cabin: la suprimirem**
-
-
-#OpciÃ³1:Edat
-# Prenem la mitjana per a valors buits de la variable "Age" 
-#titanic_data$Age[is.na(titanic_data$Age)] <- mean(titanic_data$Age,na.rm=T)
-
-#3.2Valors Extrems
-
-
-##4----ANÀLISIS RELACIONS VARIABLES--------------------------------------
-## ¿Quants passatgers van sobreviure?
-table(titanic_data$Survived)
-prop.table(table(titanic_data$Survived))
-## Una mica més d'un terç dels passatgers van sobreviure.
-
-## ¿Hi ha diferència entre la proporció d'home si dones que van sobreviure?
-table(titanic_data$Sex, titanic_data$Survived)
-prop.table(table(titanic_data$Sex, titanic_data$Survived), margin=1)
-##La majoria de les dones van sobreviure, per contra els homes no. 
-
-# Visualitzem la relació entre les variables "sex" i "survival":
-ggplot(data=titanic_data,aes(x=Sex,fill=Survived), colour="red")+geom_bar()
-
-# Un altre punt de vista. Survival com a funció de Embarked:
-ggplot(data = titanic_data,aes(x=Embarked,fill=Survived))+geom_bar(position="fill")+ylab("FrequÃ¨ncia")
-
-## ---- echo=TRUE----------------------------------------------------------
-
-female_people = titanic_data[titanic_data$Sex=="male",]
-male_people = titanic_data[titanic_data$Sex=="female",]
-
-# Visualitzem la relació entre les variables "Age" i "Pclass":
-par(mfrow=c(1,2))
-boxplot(female_people$Age~female_people$Pclass, main="Pclass by age (female)", xlab="Pclass", ylab="Age")
-boxplot(male_people$Age~male_people$Pclass, main="Pclass by age (male)", xlab="Pclass", ylab="Age")
 
 # Age missing values
 age_mean <- function(age) {
@@ -119,5 +82,45 @@ AgeImpute <- function(row) {
   }
   return(value)
 }
-  
+
 titanic_data$Age <- apply(titanic_data[, c("Sex", "Age", "Pclass")], 1, AgeImpute)
+
+
+#3.2Valors Extrems
+
+
+
+
+
+
+## ---- echo=TRUE----------------------------------------------------------
+
+
+##4----ANALISIS RELACIONS VARIABLES--------------------------------------
+## Quants passatgers van sobreviure?
+table(titanic_data$Survived)
+prop.table(table(titanic_data$Survived))
+## Una mica m?s d'un ter? dels passatgers van sobreviure.
+
+## Hi ha diferencia entre la proporci? d'home si dones que van sobreviure?
+table(titanic_data$Sex, titanic_data$Survived)
+prop.table(table(titanic_data$Sex, titanic_data$Survived), margin=1)
+##La majoria de les dones van sobreviure, per contra els homes no. 
+
+# Visualitzem la relaci? entre les variables "sex" i "survival":
+ggplot(data=titanic_data,aes(x=Sex,fill=Survived), colour="red")+geom_bar()
+
+# Un altre punt de vista. Survival com a funci? de Embarked:
+ggplot(data = titanic_data,aes(x=Embarked,fill=Survived))+geom_bar(position="fill")+ylab("FrequÃ¨ncia")
+
+
+
+female_people = titanic_data[titanic_data$Sex=="male",]
+male_people = titanic_data[titanic_data$Sex=="female",]
+
+# Visualitzem la relaci? entre les variables "Age" i "Pclass":
+par(mfrow=c(1,2))
+boxplot(female_people$Age~female_people$Pclass, main="Pclass by age (female)", xlab="Pclass", ylab="Age")
+boxplot(male_people$Age~male_people$Pclass, main="Pclass by age (male)", xlab="Pclass", ylab="Age")
+
+## ---- echo=TRUE----------------------------------------------------------
