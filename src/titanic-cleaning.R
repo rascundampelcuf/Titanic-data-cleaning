@@ -30,7 +30,7 @@ titanic_test <- read.csv("../data/test.csv")
 #Les dades del titanic contenen una barreja de variables textuals, booleanes, continues i categòriques. El dataset compte amb valors perduts, valors extrems i altres carectreístiques interessants que caldrà tractar. 
 
 ##----2. INTEGRACIÓ -----------------------------------------------------
-##La base de dades està dividia en tres parts, la part de test té 418 registres i 11 variables, mentre que la de train té 891 observacions i 12 variables, la variable que no té el dataset test, és la variable Survived, que tenim en el fitxre anomenat gender..
+##La base de dades està dividia en tres parts, la part de test té 418 registres i 11 variables, mentre que la de train té 891 observacions i 12 variables, la variable que no té el dataset test, és la variable Survived, que tenim en el fitxre anomenat gender_submission.
 ##A continuació hem integrat les tres parts, en un sol dataset. 
 dim(titanic_test)
 dim(titanic_train)
@@ -85,4 +85,3 @@ ggplot(data=titanic_data,aes(x=Sex,fill=Survived), colour="red")+geom_bar()
 
 # Un altre punt de vista. Survival com a funció de Embarked:
 ggplot(data = titanic_data,aes(x=Embarked,fill=Survived))+geom_bar(position="fill")+ylab("Frequència")
-
