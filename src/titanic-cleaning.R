@@ -1,15 +1,38 @@
+---
+title: 'Respostes: PRAC2 - Tipologia i Cicle de Vida de les Dades'
+author: "Autor: GABRIEL IZQUIERDO I MIREIA OLIVELLA"
+date: "Maig 2020"
+---
+
 ## ----load_libraries, include=FALSE---------------------------------------
 #library(knitr)
 library(ggplot2)
 library(dplyr)
 install.packages("modeest") 
 library(modeest)
+if(!require(ggplot2)){
+  install.packages('ggplot2', repos='http://cran.us.r-project.org')
+  library(ggplot2)
+}
+if(!require(grid)){
+  install.packages('grid', repos='http://cran.us.r-project.org')
+  library(grid)
+}
+if(!require(gridExtra)){
+  install.packages('gridExtra', repos='http://cran.us.r-project.org')
+  library(gridExtra)
+}
 
 
-#1. DESCRIPCIÓ del DATASET:
-## Read data 
+##----1. DESCRIPCIÓ del DATASET-------------------------------------------
+#Read data 
 titanic_train <- read.csv("../data/train.csv")
 titanic_test <- read.csv("../data/test.csv")
+#El dataset escollit recollir informació 
+
+
+
+
 
 #2. INTEGRACIÓ dades
 ##La base de dades està dividia en tres parts, la part de test té 418 registres i 11 variables, mentre que la de train té 891 observacions i 12 variables, la variable que no té el dataset test, és la variable Survived.
@@ -51,6 +74,9 @@ colSums(titanic_data== "")
 #titanic_data$Age[is.na(titanic_data$Age)] <- mean(titanic_data$Age,na.rm=T)
 
 
+
+
+
 #ANÀLISIS RELACIONS VARIABLES
 
 ##¿Quants passatgers van sobreviure?
@@ -64,5 +90,23 @@ prop.table(table(titanic_data$Sex, titanic_data$Survived), margin=1)
 ##La majoria de les dones van sobreviure, per contra els homes no. 
 
 # Visualitzem la relació entre les variables "sex" i "survival":
-ggplot(data=titanic_data[1:filas,],aes(x=Sex,fill=Survived))+geom_bar()
+ggplot(data=titanic_data,aes(x=Sex,fill=Survived), colour="red")+geom_bar()
+
+# Un altre punt de vista. Survival com a funció de Embarked:
+ggplot(data = titanic_data,aes(x=Embarked,fill=Survived))+geom_bar(position="fill")+ylab("Frequència")
+
+
+head(titanic_data,1)
+
+
+
+grid.newpage()
+ggplot(titanic_data,aes(CLASS,fill=SURVIVED))+geom_bar() +labs(x="Class", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Class")
+plotbyAge<-ggplot(titanic_data,aes(AGE,fill=SURVIVED))+geom_bar() +labs(x="Age", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Age")
+plotbySex<-ggplot(titanic_data,aes(SEX,fill=SURVIVED))+geom_bar() +labs(x="Sex", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Sex")
+grid.arrange(plotbyClass,plotbyAge,plotbySex,ncol=2)
+
+plotbyClass
+```
+
 
