@@ -3,7 +3,6 @@ title: 'Respostes: PRAC2 - Tipologia i Cicle de Vida de les Dades'
 author: "Autor: GABRIEL IZQUIERDO I MIREIA OLIVELLA"
 date: "Maig 2020"
 ---
-
 ## ----load_libraries, include=FALSE---------------------------------------
 library(knitr)
 library(ggplot2)
@@ -86,6 +85,4 @@ ggplot(data=titanic_data,aes(x=Sex,fill=Survived), colour="red")+geom_bar()
 
 # Un altre punt de vista. Survival com a funció de Embarked:
 ggplot(data = titanic_data,aes(x=Embarked,fill=Survived))+geom_bar(position="fill")+ylab("Frequència")
-
-
 
