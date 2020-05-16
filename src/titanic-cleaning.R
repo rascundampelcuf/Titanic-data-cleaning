@@ -23,7 +23,9 @@ if(!require(gridExtra)){
 }
 
 ##----1. DESCRIPCIÃ“ del DATASET-------------------------------------------
-#Read data 
+
+## ---- echo=TRUE----------------------------------------------------------
+# read data
 titanic_train <- read.csv("../data/train.csv")
 titanic_test <- read.csv("../data/test.csv")
 #El dataset escollit recollir informaciÃ³ dels passatgers del titanic, en els que es pot analitzar la superviÃ¨ncia i les caracterÃ­stiques d'aquests. 
@@ -68,20 +70,54 @@ titanic_data$Fare[1044] <- median(titanic_data$Fare, na.rm = TRUE)
 #3.2Valors Extrems
 
 
-
-##4----ANÃ€LISIS RELACIONS VARIABLES--------------------------------------
-##Â¿Quants passatgers van sobreviure?
+##4----ANÀLISIS RELACIONS VARIABLES--------------------------------------
+## ¿Quants passatgers van sobreviure?
 table(titanic_data$Survived)
 prop.table(table(titanic_data$Survived))
-## Una mica mÃ©s d'un terÃ§ dels passatgers van sobreviure.
+## Una mica més d'un terç dels passatgers van sobreviure.
 
-##Â¿Hi ha diferÃ¨ncia entre la proporciÃ³ d'home si dones que van sobreviure?
+## ¿Hi ha diferència entre la proporció d'home si dones que van sobreviure?
 table(titanic_data$Sex, titanic_data$Survived)
 prop.table(table(titanic_data$Sex, titanic_data$Survived), margin=1)
 ##La majoria de les dones van sobreviure, per contra els homes no. 
 
-# Visualitzem la relaciÃ³ entre les variables "sex" i "survival":
+# Visualitzem la relació entre les variables "sex" i "survival":
 ggplot(data=titanic_data,aes(x=Sex,fill=Survived), colour="red")+geom_bar()
 
-# Un altre punt de vista. Survival com a funciÃ³ de Embarked:
+# Un altre punt de vista. Survival com a funció de Embarked:
 ggplot(data = titanic_data,aes(x=Embarked,fill=Survived))+geom_bar(position="fill")+ylab("FrequÃ¨ncia")
+
+## ---- echo=TRUE----------------------------------------------------------
+
+female_people = titanic_data[titanic_data$Sex=="male",]
+male_people = titanic_data[titanic_data$Sex=="female",]
+
+# Visualitzem la relació entre les variables "Age" i "Pclass":
+par(mfrow=c(1,2))
+boxplot(female_people$Age~female_people$Pclass, main="Pclass by age (female)", xlab="Pclass", ylab="Age")
+boxplot(male_people$Age~male_people$Pclass, main="Pclass by age (male)", xlab="Pclass", ylab="Age")
+
+# Age missing values
+age_mean <- function(age) {
+  round(summary(age)['Mean'])
+}
+
+female_mean_ages = tapply(female_people$Age, female_people$Pclass, age_mean)
+male_mean_ages = tapply(male_people$Age, male_people$Pclass, age_mean)
+
+AgeImpute <- function(row) {
+  sex <- row['Sex']
+  age <- row['Age']
+  pclass <- row['Pclass']
+  value <- age
+  if (is.na(age)) {
+    if (sex == "female") {
+      value <- female_mean_ages[pclass]
+    } else {
+      value <- male_mean_ages[pclass]
+    }
+  }
+  return(value)
+}
+  
+titanic_data$Age <- apply(titanic_data[, c("Sex", "Age", "Pclass")], 1, AgeImpute)
