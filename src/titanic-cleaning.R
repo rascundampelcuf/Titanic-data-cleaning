@@ -21,7 +21,7 @@ library(nortest)
 ## ---- echo=TRUE----------------------------------------------------------
 
 ##----1. DESCRIPCIÓ del DATASET-------------------------------------------
-#El dataset escollit recollir informació dels passatgers del titanic, en els que es pot analitzar la superviència i les característiques d'aquests. 
+#El dataset escollit recull informació dels passatgers del titanic, en els que es pot analitzar la superviència i les característiques d'aquests. 
 #Les dades del titanic contenen una barreja de variables textuals, booleanes, continues i categòriques. El dataset compte amb valors perduts, valors extrems i altres carectreístiques interessants que caldrà tractar. 
 
 #read Data
@@ -30,7 +30,7 @@ titanic_test <- read.csv("../data/test.csv")
 ## ---- echo=TRUE----------------------------------------------------------
 
 ##----2. INTEGRACIÓ -----------------------------------------------------
-##La base de dades està dividia en tres parts, la part de test té 418 registres i 11 variables, mentre que la de train té 891 observacions i 12 variables, la variable que no té el dataset test, és la variable Survived, que tenim en el fitxre anomenat gender_submission.
+##La base de dades està dividia en tres parts, la part de test té 418 registres i 11 variables, mentre que la de train té 891 observacions i 12 variables, la variable que no té el dataset test, és la variable Survived, que tenim en el fitxer anomenat gender_submission.
 ##A continuació hem integrat les tres parts, en un sol dataset. 
 dim(titanic_test)
 dim(titanic_train)
@@ -89,9 +89,19 @@ AgeImpute <- function(row) {
 titanic_data$Age <- apply(titanic_data[, c("Sex", "Age", "Pclass")], 1, AgeImpute)
 
 #3.2Valors Extrems
+##Els valors extrems o outliers són registres que destacant per ser molt distants al valor central del conjunt. 
+##Generalment es considera un outlier quan el seu valor es troba allunyat 3 desviacions estàndars respecte la mitjana, un instrument gràfic que ens permet visualitzar ràpidament aquests valors són els diagrames de caixes. 
+##Una altre forma de detectar-los a R, es mitjançant la funció boxplot.stats()
+
 fare.bp<-boxplot(titanic_data$Fare, main="Fare", col="darkgreen")
 Age.bp<-boxplot(titanic_data$Age, main="Age", col="darkgreen")
 
+boxplot.stats(titanic_data$Age)$out
+boxplot.stats(titanic_data$Fare)$out
+
+#Si ens fixem en els valors extrems resultants, en el cas d'Age, són valors que poden donar-se perfectament, ja que podem tenir persones de 80 anys.
+#En el cas de Fare, són valors que es poden haver donat també, ja que el preu que hagi pugut pagar cada passatger pot tenir una gran oscil.lació, i es poden donar valors de 0 a 500 perfectament.
+#Es per això, que tot i haver-los detectat, hem decidit no tractar-los de manera diferent a com han estat recollits.
 
 ## ---- echo=TRUE----------------------------------------------------------
 
@@ -103,7 +113,6 @@ Age.bp<-boxplot(titanic_data$Age, main="Age", col="darkgreen")
 #4.2 Normalitat i homogeneïtat de la variància
 
 #Per comporbar si segueix una distribució normal, podem tenir una aproximació amb la funció qqnorm, on veiem que hi ha força desviaciço en alguns trams, i per tant, possibles evidencies de que no segueix una distribució normal.
-
 #VARIABLE FARE
 summary(titanic_data$Fare)
 #Representació de la distribució de la variable Fare mitjançant un histograma: 
@@ -178,8 +187,6 @@ boxplot(female_people$Age~female_people$Pclass, main="Pclass by age (female)", x
 boxplot(male_people$Age~male_people$Pclass, main="Pclass by age (male)", xlab="Pclass", ylab="Age")
 
 ## ---- echo=TRUE----------------------------------------------------------
-
-
 
 
 
