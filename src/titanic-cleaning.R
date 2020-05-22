@@ -106,48 +106,52 @@ boxplot.stats(titanic_data$Fare)$out
 ## ---- echo=TRUE----------------------------------------------------------
 
 
-##4----ANALISIS RELACIONS VARIABLES--------------------------------------
-
+##4----ANÀLISI DE LES DADES------------------------------------------------
 
 #4.1 Selecció de dades: 
-#4.2 Normalitat i homogeneïtat de la variància
+##Totes les variables que tenim en el dataset fan referència a característiques dels passatgers del titanic.
+##Tot i això, podem precindir de la columna CABIN, ja que per l'anàlis que durem a terme, no serà necessari la precisió tència del número de cabina.
+titanic_data1<- select(titanic_data, -Cabin)
+summary(titanic_data1)
 
+
+#4.2 Normalitat i homogeneïtat de la variància
 #Per comporbar si segueix una distribució normal, podem tenir una aproximació amb la funció qqnorm, on veiem que hi ha força desviaciço en alguns trams, i per tant, possibles evidencies de que no segueix una distribució normal.
 #VARIABLE FARE
-summary(titanic_data$Fare)
+summary(titanic_data1$Fare)
 #Representació de la distribució de la variable Fare mitjançant un histograma: 
 hist(x=titanic_data$Fare, main="Histograma Fare", xlab="Fare", ylab="Frecuencia", col = "purple", ylim=c(0,1200), xlim = c(0,600))
 
 #A continuació compararem els quartils de la distribució observada amb els quartils teòrics d'una distribució normal, com més s'aproximen a les dades d'una normal, més alineats estan els punts al voltant de la recta.
-qqnorm(titanic_data$Fare) 
-qqline(titanic_data$Fare, col="red")
-ggplot(titanic_data,aes(Fare)) + geom_density(size=1, alpha= 0.6)+ ylab("DENSIDAD")
+qqnorm(titanic_data1$Fare) 
+qqline(titanic_data1$Fare, col="red")
+ggplot(titanic_data1,aes(Fare)) + geom_density(size=1, alpha= 0.6)+ ylab("DENSIDAD")
 
 #Mètode analític per contrastar la Normalitat
 ##Hipòtesis nul.la: les dades procedeixen d'una distribució normal. 
 ##Hipòtesis alterantiva: no procedeixen d'una distribució normal. 
 
 #TEST DE SHAPIRO-WILK 
-shapiro.test(x=titanic_data$Fare)
+shapiro.test(x=titanic_data1$Fare)
 ##rebutjem hipotesis nul.la, la diferència és estadísticament significativa. (mostres menor de 50)
 
 #TEST Lilliefors
 #Asumeix que la media y varianza poblacional són desconegudes. 
 library("nortest")
-lillie.test(x=titanic_data$Fare)
+lillie.test(x=titanic_data1$Fare)
 ##rebutjem hipotesis nul.la, la diferència és estadísticament significativa.
 ##Problemes de la manca de normalitat; estimadors mínim-quadrats no són eficients y els intervals de confiança són aproximats no exactes. 
 
 
 #VARIABLE AGE
-summary(titanic_data$Age)
+summary(titanic_data1$Age)
 #Representació de la distribució de la variable Fare mitjançant un histograma: 
 hist(x=titanic_data$Age, main="Histograma Age", xlab="Age", ylab="Frecuencia", col = "green yellow", ylim=c(0,200), xlim = c(0,100))
 
 #A continuació compararem els quartils de la distribució observada amb els quartils teòrics d'una distribució normal, com més s'aproximen a les dades d'una normal, més alineats estan els punts al voltant de la recta.
-qqnorm(titanic_data$Age) 
-qqline(titanic_data$Age, col="red")
-ggplot(titanic_data,aes(Age)) + geom_density(size=1, alpha= 0.6)+ ylab("DENSIDAD")
+qqnorm(titanic_data1$Age) 
+qqline(titanic_data1$Age, col="red")
+ggplot(titanic_data1,aes(Age)) + geom_density(size=1, alpha= 0.6)+ ylab("DENSIDAD")
 
 #Mètode analític per contrastar la Normalitat
 ##Hipòtesis nul.la: les dades procedeixen d'una distribució normal. 
@@ -156,32 +160,29 @@ ggplot(titanic_data,aes(Age)) + geom_density(size=1, alpha= 0.6)+ ylab("DENSIDAD
 #TEST Lilliefors
 #Asumeix que la media y varianza poblacional són desconegudes. 
 library("nortest")
-lillie.test(x=titanic_data$Age)
+lillie.test(x=titanic_data1$Age)
 ##rebutjem hipotesis nul.la, la diferència és estadísticament significativa.
 ##Problemes de la manca de normalitat; estimadors mínim-quadrats no són eficients y els intervals de confiança són aproximats no exactes.
 
-pairs(titanic_data[, c(6,10)])
-View(titanic_data)
+pairs(titanic_data1[, c(6,10)])
+View(titanic_data1)
 
 
-## 4.3
+## 4.3 Aplicació proves estadístiques
 #Quants passatgers van sobreviure?
-table(titanic_data$Survived)
-prop.table(table(titanic_data$Survived))
+table(titanic_data1$Survived)
+prop.table(table(titanic_data1$Survived))
 ## Una mica m?s d'un ter? dels passatgers van sobreviure.
 
 ## Hi ha diferencia entre la proporci? d'home si dones que van sobreviure?
-table(titanic_data$Sex, titanic_data$Survived)
-prop.table(table(titanic_data$Sex, titanic_data$Survived), margin=1)
+table(titanic_data1$Sex, titanic_data1$Survived)
+prop.table(table(titanic_data1$Sex, titanic_data1$Survived), margin=1)
 ##La majoria de les dones van sobreviure, per contra els homes no. 
 
-# Visualitzem la relaci? entre les variables "sex" i "survival":
-ggplot(data=titanic_data,aes(x=Sex,fill=Survived), colour="red")+geom_bar()
+# Visualitzem la relació entre les variables "sex" i "survival":
+ggplot(data=titanic_data1,aes(x=Sex,fill=Survived), colour="red")+geom_bar()
 
-# Un altre punt de vista. Survival com a funci? de Embarked:
-
-
-# Visualitzem la relaci? entre les variables "Age" i "Pclass":
+# Visualitzem la relació entre les variables "Age" i "Pclass":
 par(mfrow=c(1,2))
 boxplot(female_people$Age~female_people$Pclass, main="Pclass by age (female)", xlab="Pclass", ylab="Age")
 boxplot(male_people$Age~male_people$Pclass, main="Pclass by age (male)", xlab="Pclass", ylab="Age")
