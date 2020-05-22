@@ -92,7 +92,6 @@ titanic_data$Age <- apply(titanic_data[, c("Sex", "Age", "Pclass")], 1, AgeImput
 ##Els valors extrems o outliers són registres que destacant per ser molt distants al valor central del conjunt. 
 ##Generalment es considera un outlier quan el seu valor es troba allunyat 3 desviacions estàndars respecte la mitjana, un instrument gràfic que ens permet visualitzar ràpidament aquests valors són els diagrames de caixes. 
 ##Una altre forma de detectar-los a R, es mitjançant la funció boxplot.stats()
-
 fare.bp<-boxplot(titanic_data$Fare, main="Fare", col="darkgreen")
 Age.bp<-boxplot(titanic_data$Age, main="Age", col="darkgreen")
 
@@ -114,13 +113,12 @@ boxplot.stats(titanic_data$Fare)$out
 titanic_data1<- select(titanic_data, -Cabin)
 summary(titanic_data1)
 
-
 #4.2 Normalitat i homogeneïtat de la variància
 #Per comporbar si segueix una distribució normal, podem tenir una aproximació amb la funció qqnorm, on veiem que hi ha força desviaciço en alguns trams, i per tant, possibles evidencies de que no segueix una distribució normal.
 #VARIABLE FARE
 summary(titanic_data1$Fare)
 #Representació de la distribució de la variable Fare mitjançant un histograma: 
-hist(x=titanic_data$Fare, main="Histograma Fare", xlab="Fare", ylab="Frecuencia", col = "purple", ylim=c(0,1200), xlim = c(0,600))
+hist(x=titanic_data1$Fare, main="Histograma Fare", xlab="Fare", ylab="Frecuencia", col = "purple", ylim=c(0,1200), xlim = c(0,600))
 
 #A continuació compararem els quartils de la distribució observada amb els quartils teòrics d'una distribució normal, com més s'aproximen a les dades d'una normal, més alineats estan els punts al voltant de la recta.
 qqnorm(titanic_data1$Fare) 
@@ -168,12 +166,11 @@ pairs(titanic_data1[, c(6,10)])
 View(titanic_data1)
 
 
-##Normalitat dels residus:?
-
-
 
 #Comprovació de la homogeneïtat de la variància.
 ##Finalment comprovarem l'homoscedasticitat de les dades, és a dir, la igualtat de variàncies. 
+
+
 
 
 
@@ -193,12 +190,11 @@ prop.table(table(titanic_data1$Sex, titanic_data1$Survived), margin=1)
 ggplot(data=titanic_data1,aes(x=Sex,fill=Survived), colour="red")+geom_bar()
 
 # Visualitzem la relació entre les variables "Age" i "Pclass":
-par(mfrow=c(1,2))
-boxplot(female_people$Age~female_people$Pclass, main="Pclass by age (female)", xlab="Pclass", ylab="Age")
-boxplot(male_people$Age~male_people$Pclass, main="Pclass by age (male)", xlab="Pclass", ylab="Age")
+#par(mfrow=c(1,2))
+#boxplot(female_people$Age~female_people$Pclass, main="Pclass by age (female)", xlab="Pclass", ylab="Age")
+#boxplot(male_people$Age~male_people$Pclass, main="Pclass by age (male)", xlab="Pclass", ylab="Age")
 
 ## ---- echo=TRUE----------------------------------------------------------
-
 
 
 #bibliografia
