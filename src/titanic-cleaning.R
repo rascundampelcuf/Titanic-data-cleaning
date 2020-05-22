@@ -84,8 +84,9 @@ AgeImpute <- function(row) {
       value <- male_mean_ages[pclass]
     }
   }
-  return(value)
+  return(as.numeric(value))
 }
+
 titanic_data$Age <- apply(titanic_data[, c("Sex", "Age", "Pclass")], 1, AgeImpute)
 
 #3.2Valors Extrems
