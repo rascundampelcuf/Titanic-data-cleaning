@@ -168,6 +168,16 @@ pairs(titanic_data1[, c(6,10)])
 View(titanic_data1)
 
 
+##Normalitat dels residus:?
+
+
+
+#Comprovació de la homogeneïtat de la variància.
+##Finalment comprovarem l'homoscedasticitat de les dades, és a dir, la igualtat de variàncies. 
+
+
+
+
 ## 4.3 Aplicació proves estadístiques
 #Quants passatgers van sobreviure?
 table(titanic_data1$Survived)
