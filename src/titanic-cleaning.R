@@ -145,7 +145,7 @@ lillie.test(x=titanic_data1$Fare)
 #VARIABLE AGE
 summary(titanic_data1$Age)
 #Representació de la distribució de la variable Fare mitjançant un histograma: 
-hist(x=titanic_data$Age, main="Histograma Age", xlab="Age", ylab="Frecuencia", col = "green yellow", ylim=c(0,200), xlim = c(0,100))
+hist(x=titanic_data1$Age, main="Histograma Age", xlab="Age", ylab="Frecuencia", col = "green yellow", ylim=c(0,200), xlim = c(0,100))
 
 #A continuació compararem els quartils de la distribució observada amb els quartils teòrics d'una distribució normal, com més s'aproximen a les dades d'una normal, més alineats estan els punts al voltant de la recta.
 qqnorm(titanic_data1$Age) 
