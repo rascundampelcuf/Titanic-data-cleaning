@@ -94,6 +94,9 @@ titanic_data$Age <- apply(titanic_data[, c("Sex", "Age", "Pclass")], 1, AgeImput
 ##Generalment es considera un outlier quan el seu valor es troba allunyat 3 desviacions estàndars respecte la mitjana, un instrument gràfic que ens permet visualitzar ràpidament aquests valors són els diagrames de caixes. 
 ##Una altre forma de detectar-los a R, es mitjançant la funció boxplot.stats()
 fare.bp<-boxplot(titanic_data$Fare, main="Fare", col="darkgreen")
+titanic_data$Fare[titanic_data$Fare > 400]
+# 4 valors extrems però s'intueix que són a propòsit al ser els 4 exactament iguals.
+
 Age.bp<-boxplot(titanic_data$Age, main="Age", col="darkgreen")
 
 boxplot.stats(titanic_data$Age)$out
