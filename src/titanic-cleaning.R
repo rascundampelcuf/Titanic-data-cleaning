@@ -293,14 +293,36 @@ for (i in c("Survived","Pclass","Sex","Embarked")){
 ## Create dummy variables for categorical variables
 titanic_data2 <- dummy.data.frame(titanic_data2, names=c("Pclass","Sex","Embarked"), sep="_")
 
-#Regressió:
+## Splitting training and test data
+train <- titanic_data2[1:667,]
+test <- titanic_data2[668:889,]
 
+## Model Creation
+model <- glm(Survived ~.,family=binomial(link='logit'),data=train)
 
+## Model Summary
+summary(model)
 
+## Using anova() to analyze the table of devaiance
+anova(model, test="Chisq")
 
+## Predicting Test Data
+result <- predict(model,newdata=test,type='response')
+result <- ifelse(result > 0.5,1,0)
 
+## Confusion matrix and statistics
+confusionMatrix(table(result, test$Survived))
 
+## ROC Curve and calculating the area under the curve(AUC)
+predictions <- predict(model, newdata=test, type="response")
+ROCRpred <- prediction(predictions, test$Survived)
+ROCRperf <- performance(ROCRpred, measure = "tpr", x.measure = "fpr")
 
+plot(ROCRperf, colorize = TRUE, text.adj = c(-0.2,1.5), print.cutoffs.at = seq(0,1,0.1))
+
+auc <- performance(ROCRpred, measure = "auc")
+auc <- auc@y.values[[1]]
+auc
 
 
 
