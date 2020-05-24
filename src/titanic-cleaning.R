@@ -15,7 +15,7 @@ if(!require(gridExtra)){
   install.packages('gridExtra', repos='http://cran.us.r-project.org')
   library(gridExtra)
 }
-
+library(car)
 library(normtest)
 library(nortest)
 ## ---- echo=TRUE----------------------------------------------------------
@@ -170,36 +170,97 @@ pairs(titanic_data1[, c(6,10)])
 View(titanic_data1)
 
 
+#Comprovació de la HOMOGENEITAT DE LA VARIANCIA
+##Finalment comprovarem l'homoscedasticitat de les dades, és a dir, la igualtat de variàncies per Fare i Age.
+aggregate(Fare~Survived, data = titanic_data1, FUN = var)
+aggregate(Age~Survived, data = titanic_data1, FUN = var)
+##Ja que no tenim seguretat que provinguin d'una població normal, hem utilitzat el test de Levene amb la mediana com a mesura de centralitat, juntament amb el test no paramètric  Fligner-Killeen que també es basa en la mediana. 
+##Levene TEST
+levene <- filter(.data = titanic_data1, Survived %in% c("0", "1"))
+leveneTest(y = levene$Fare, group = levene$Survived, center = "median")
+leveneTest(y = levene$Age, group = levene$Survived, center = "median")
+##Fligner-Killeen
+fligner.test(Fare ~ Survived, data=titanic_data1)
+fligner.test(Age ~ Survived, data=titanic_data1)
 
-#Comprovació de la homogeneïtat de la variància.
-##Finalment comprovarem l'homoscedasticitat de les dades, és a dir, la igualtat de variàncies. 
+#En ambdos test, podem veure com en el cas de Fare, es rebutja la hipòtesis nula i per tant, la variança no és constant, en canvi, pel que fa l'edat, amb un nivell de confiança del 95%, podem concloure que en ambdos grups la variança no varia, és a dir, no s'ha trobat diferencia significativa entre la variança d'aquests. 
 
 
 
+## 4.3 Aplicació proves estadístiques: 
 
+###Ens interessa descriure la relació entre la supervivència i les variables edat, classe i gènere. 
+###Per a això, en primer lloc hem dut a terme un gràfic mitjançant diagrames de barres amb la quantitat de morts i supervivents segons la classe a la que viatjaven, l'edat o el sexe.
+###D'altra banda, per a obtenir les dades que estem veient utilitzarem la comanda table per a dues variables que ens proporciona una taula de contingència.
 
+plotbyClass<-ggplot(titanic_data1,aes(Pclass,fill=Survived))+geom_bar() +labs(x="Class", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Class")
+plotbyAge<-ggplot(titanic_data1,aes(Age,fill=Survived))+geom_bar() +labs(x="Age", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Age")
+plotbySex<-ggplot(titanic_data1,aes(Sex,fill=Survived))+geom_bar() +labs(x="Sex", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Sex")
+grid.arrange(plotbyClass,plotbyAge,plotbySex,ncol=2)
 
-## 4.3 Aplicació proves estadístiques
 #Quants passatgers van sobreviure?
 table(titanic_data1$Survived)
 prop.table(table(titanic_data1$Survived))
-## Una mica m?s d'un ter? dels passatgers van sobreviure.
 
-## Hi ha diferencia entre la proporci? d'home si dones que van sobreviure?
-table(titanic_data1$Sex, titanic_data1$Survived)
+##Hi ha diferència entre la proporció d'homes i dones que van sobreviure?
+table_Sex<-table(titanic_data1$Sex, titanic_data1$Survived)
 prop.table(table(titanic_data1$Sex, titanic_data1$Survived), margin=1)
-##La majoria de les dones van sobreviure, per contra els homes no. 
 
-# Visualitzem la relació entre les variables "sex" i "survival":
-ggplot(data=titanic_data1,aes(x=Sex,fill=Survived), colour="red")+geom_bar()
+## Hi ha diferències en la supervivencia segons la classe en la que viatjaven ?
+table_Class<-table(titanic_data1$Pclass, titanic_data1$Survived)
+prop.table(table(titanic_data1$Pclass, titanic_data1$Survived), margin=1)
 
-# Visualitzem la relació entre les variables "Age" i "Pclass":
-#par(mfrow=c(1,2))
-#boxplot(female_people$Age~female_people$Pclass, main="Pclass by age (female)", xlab="Pclass", ylab="Age")
-#boxplot(male_people$Age~male_people$Pclass, main="Pclass by age (male)", xlab="Pclass", ylab="Age")
+## Hi ha diferències en la supervivència segons l'edat?
+##cal fer discretització d'edat (en rangs)
+table_Age<-table(titanic_data1$Age, titanic_data1$Survived)
+prop.table(table(titanic_data1$Age, titanic_data1$Survived), margin=1)
+
+
+#Mitjançant els gràfics de barres i les taules de contingencia, podem treure la següent informaicó: 
+##La proporció d'homes i dones que van sobreviure és forá diferent, homes: 109, dones: 385, si ens fixem en el % respecte el seu gènere, en les dones és del 83% mentre que pels homes és del 23%.
+##Referent a la classe en la que viatjaven, si ens fixem en el gràfic, el nombre de personas que més van sobreviure són els que viatjaven en 3 classe, cal dir, però que, el nombre de passatgers d'aquesta classe és molt major. Si ens fixem en el % dins de cada classe, són els de primera classe els que tenen una ràtio més alta de supervivència.
+## Pel que fa l'edat, 
+
+par(mfrow=c(2,2))
+plot(table_Class, col = c("darkseagreen4","darksalmon"), main = "Survived vs. Class")
+plot(table_Sex, col = c("darkseagreen4","darksalmon"), main = "Survived vs. Sex")
+plot(table_Age, col = c("darkseagreen4","darksalmon"), main = "Survived vs. Age")
+
+
+
+##A més a més també ens interesava conèixer si la probabilitat de sobreviure és major en les families de 2 o més fills?
+#Creació nova variable: 
+titanic_data1$FamilySize <- titanic_data1$SibSp + titanic_data1$Parch +1;
+hist(titanic_data1$FamilySize)
+boxplot.stats(titanic_data1$FamilySize)$out
+fligner.test(Age ~ Survived, data=titanic_data1)
+lillie.test(x=titanic_data1$FamilySize)
+
+table_Age<-table(titanic_data1$FamilySize, titanic_data1$Survived)
+prop.table(table(titanic_data1$FamilySize, titanic_data1$Survived), margin=1)
+
+#Farem serà discretitzar també la variable Família Size. 
+
+
+
+#Correlació:
+
+
+
+#Regressió:
+
+
+
+
+
+
+
+
+
 
 ## ---- echo=TRUE----------------------------------------------------------
 
-
 #bibliografia
 #https://rpubs.com/Joaquin_AR/218465
+#http://www.cookbook-r.com/Statistical_analysis/Homogeneity_of_variance/
+#https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/aggregate
