@@ -16,6 +16,18 @@ if(!require(gridExtra)){
   library(gridExtra)
 }
 library(car)
+if(!require(dummies)){
+  install.packages("dummies")
+  library(dummies)
+}
+if(!require(e1071)){
+  install.packages("e1071")
+  library(e1071)
+}
+if(!require(ROCR)){
+  install.packages("ROCR")
+  library(ROCR)
+}
 library(normtest)
 library(nortest)
 ## ---- echo=TRUE----------------------------------------------------------
@@ -243,9 +255,43 @@ prop.table(table(titanic_data1$FamilySize, titanic_data1$Survived), margin=1)
 
 
 
-#Correlació:
+# Correlació:
+
+aux_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare", "Survived")]
+aux_data$Fare <- round(aux_data$Fare)
+corr_matrix <- matrix(nc = 2, nr = 0)
+colnames(corr_matrix) <- c("estimate", "p-value")
+for (i in 1:(ncol(aux_data) - 1)) {
+  spearman_test = cor.test(aux_data[,i],
+                           aux_data[,length(aux_data)],
+                           method = "spearman")
+  corr_coef = spearman_test$estimate
+  p_val = spearman_test$p.value
+  
+  pair = matrix(ncol = 2, nrow = 1)
+  pair[1][1] = corr_coef
+  pair[2][1] = p_val
+  corr_matrix <- rbind(corr_matrix, pair)
+  rownames(corr_matrix)[nrow(corr_matrix)] <- colnames(aux_data)[i]
+}
+
+print(corr_matrix)
 
 
+# Regressió logística
+## Check number of uniques values for each of the column to find out columns which we can convert to factors
+sapply(titanic_data, function(x) length(unique(x)))
+
+## Removing Cabin as it has very high missing values, passengerId, Ticket and Name are not required
+titanic_data2 <- titanic_data %>% select(-c(Cabin, PassengerId, Ticket, Name))
+
+## Converting "Survived","Pclass","Sex","Embarked" to factors
+for (i in c("Survived","Pclass","Sex","Embarked")){
+  titanic_data2[,i]=as.factor(titanic_data2[,i])
+}
+
+## Create dummy variables for categorical variables
+titanic_data2 <- dummy.data.frame(titanic_data2, names=c("Pclass","Sex","Embarked"), sep="_")
 
 #Regressió:
 
