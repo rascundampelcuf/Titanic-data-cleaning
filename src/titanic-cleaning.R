@@ -247,7 +247,7 @@ plot(table_AgeD, col = c("darkseagreen4","darksalmon"), main = "Survived vs. Age
 
 
 
-##A més a més també ens interesava conèixer si la probabilitat de sobreviure és major en les families de 2 o més fills?
+##A més a més també ens interesava conèixer si la probabilitat de sobreviure tenia alguna relació amb el tamany de la família?
 #Creació nova variable: 
 titanic_data1$FamilySize <- titanic_data1$SibSp + titanic_data1$Parch +1;
 hist(titanic_data1$FamilySize)
@@ -255,10 +255,32 @@ boxplot.stats(titanic_data1$FamilySize)$out
 fligner.test(Age ~ Survived, data=titanic_data1)
 lillie.test(x=titanic_data1$FamilySize)
 
-table_Age<-table(titanic_data1$FamilySize, titanic_data1$Survived)
-prop.table(table(titanic_data1$FamilySize, titanic_data1$Survived), margin=1)
-
+summary(titanic_data1$FamilySize)
 #Farem serà discretitzar també la variable Família Size. 
+titanic_data1$FamilySizeD[titanic_data1$FamilySize <2] <- "Adult sol"
+titanic_data1$FamilySizeD[titanic_data1$FamilySize >= 2 & titanic_data1$FamilySize < 5] <- "Famílies de dos a 4 membres"
+titanic_data1$FamilySizeD[titanic_data1$FamilySize>=5] <- "Famílies amb més de 4 membres"
+
+# Tot seguit fem de la nova variable un factor
+titanic_data1$FamilySizeD<-
+  factor(
+    titanic_data1$FamilySizeD,
+    ordered = FALSE,
+    levels = c(
+      "Adult sol",
+      "Famílies de dos a 4 membres",
+      "Famílies amb més de 4 membres"
+    )
+  )
+
+summary(titanic_data1$FamilySizeD)
+
+table_Family<-table(titanic_data1$FamilySizeD, titanic_data1$Survived)
+prop.table(table(titanic_data1$FamilySizeD, titanic_data1$Survived), margin=1)
+#Podem veure com la probabilitat de sobreviure és major en les famílies entre 2 i 4 membres. 
+
+
+
 
 
 
@@ -266,7 +288,7 @@ prop.table(table(titanic_data1$FamilySize, titanic_data1$Survived), margin=1)
 
 
 
-#Regressió:
+#Regressió logit:
 
 
 
