@@ -16,6 +16,18 @@ if(!require(gridExtra)){
   library(gridExtra)
 }
 library(car)
+if(!require(dummies)){
+  install.packages("dummies")
+  library(dummies)
+}
+if(!require(e1071)){
+  install.packages("e1071")
+  library(e1071)
+}
+if(!require(ROCR)){
+  install.packages("ROCR")
+  library(ROCR)
+}
 library(normtest)
 library(nortest)
 ## ---- echo=TRUE----------------------------------------------------------
@@ -94,6 +106,9 @@ titanic_data$Age <- apply(titanic_data[, c("Sex", "Age", "Pclass")], 1, AgeImput
 ##Generalment es considera un outlier quan el seu valor es troba allunyat 3 desviacions estàndars respecte la mitjana, un instrument gràfic que ens permet visualitzar ràpidament aquests valors són els diagrames de caixes. 
 ##Una altre forma de detectar-los a R, es mitjançant la funció boxplot.stats()
 fare.bp<-boxplot(titanic_data$Fare, main="Fare", col="darkgreen")
+titanic_data$Fare[titanic_data$Fare > 400]
+# 4 valors extrems però s'intueix que són a propòsit al ser els 4 exactament iguals.
+
 Age.bp<-boxplot(titanic_data$Age, main="Age", col="darkgreen")
 
 boxplot.stats(titanic_data$Age)$out
@@ -284,18 +299,74 @@ prop.table(table(titanic_data1$FamilySizeD, titanic_data1$Survived), margin=1)
 
 
 
-#Correlació:
+# Correlació:
+
+aux_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare", "Survived")]
+aux_data$Fare <- round(aux_data$Fare)
+corr_matrix <- matrix(nc = 2, nr = 0)
+colnames(corr_matrix) <- c("estimate", "p-value")
+for (i in 1:(ncol(aux_data) - 1)) {
+  spearman_test = cor.test(aux_data[,i],
+                           aux_data[,length(aux_data)],
+                           method = "spearman")
+  corr_coef = spearman_test$estimate
+  p_val = spearman_test$p.value
+  
+  pair = matrix(ncol = 2, nrow = 1)
+  pair[1][1] = corr_coef
+  pair[2][1] = p_val
+  corr_matrix <- rbind(corr_matrix, pair)
+  rownames(corr_matrix)[nrow(corr_matrix)] <- colnames(aux_data)[i]
+}
+
+print(corr_matrix)
 
 
+# Regressió logística
+## Check number of uniques values for each of the column to find out columns which we can convert to factors
+sapply(titanic_data, function(x) length(unique(x)))
 
-#Regressió logit:
+## Removing Cabin as it has very high missing values, passengerId, Ticket and Name are not required
+titanic_data2 <- titanic_data %>% select(-c(Cabin, PassengerId, Ticket, Name))
 
+## Converting "Survived","Pclass","Sex","Embarked" to factors
+for (i in c("Survived","Pclass","Sex","Embarked")){
+  titanic_data2[,i]=as.factor(titanic_data2[,i])
+}
 
+## Create dummy variables for categorical variables
+titanic_data2 <- dummy.data.frame(titanic_data2, names=c("Pclass","Sex","Embarked"), sep="_")
 
+## Splitting training and test data
+train <- titanic_data2[1:667,]
+test <- titanic_data2[668:889,]
 
+## Model Creation
+model <- glm(Survived ~.,family=binomial(link='logit'),data=train)
 
+## Model Summary
+summary(model)
 
+## Using anova() to analyze the table of devaiance
+anova(model, test="Chisq")
 
+## Predicting Test Data
+result <- predict(model,newdata=test,type='response')
+result <- ifelse(result > 0.5,1,0)
+
+## Confusion matrix and statistics
+confusionMatrix(table(result, test$Survived))
+
+## ROC Curve and calculating the area under the curve(AUC)
+predictions <- predict(model, newdata=test, type="response")
+ROCRpred <- prediction(predictions, test$Survived)
+ROCRperf <- performance(ROCRpred, measure = "tpr", x.measure = "fpr")
+
+plot(ROCRperf, colorize = TRUE, text.adj = c(-0.2,1.5), print.cutoffs.at = seq(0,1,0.1))
+
+auc <- performance(ROCRpred, measure = "auc")
+auc <- auc@y.values[[1]]
+auc
 
 
 
