@@ -1,0 +1,36 @@
+---
+title: 'Pràctica 2: Neteja i anàlisi de les dades'
+author: "Mireia Olivella i Gabriel Izquierdo"
+date: '`r format(Sys.Date(),"%e de maig de %Y")`'
+output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+header-includes: \renewcommand{\contentsname}{Índex}
+---
+
+
+\pagebreak
+
+# Descripció del dataset
+
+# Neteja de les dades
+## Selecció de les variables
+
+## Dades amb elements buits (valors perduts)
+
+## Identificació de valors extrems
+
+# Anàlisi de les dades
+## Comprovació de la normalitat i homogeneïtat de la variància
+
+## Aplicació de proves estadístiques
+### Matriu de correlació
+
+### $X^{2}$
+
+### Regressió logística
+
+# Representació dels resultats
+
+# Resolució del problema
