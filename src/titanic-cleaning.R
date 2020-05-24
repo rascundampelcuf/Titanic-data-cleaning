@@ -177,7 +177,6 @@ library("nortest")
 lillie.test(x=titanic_data1$Age)
 ##rebutjem hipotesis nul.la, la diferència és estadísticament significativa.
 ##Problemes de la manca de normalitat; estimadors mínim-quadrats no són eficients y els intervals de confiança són aproximats no exactes.
-
 pairs(titanic_data1[, c(6,10)])
 View(titanic_data1)
 
@@ -222,21 +221,44 @@ prop.table(table(titanic_data1$Sex, titanic_data1$Survived), margin=1)
 table_Class<-table(titanic_data1$Pclass, titanic_data1$Survived)
 prop.table(table(titanic_data1$Pclass, titanic_data1$Survived), margin=1)
 
+
+# A continuació discretitzarem la variable edat. El nombre d'intervals escollits=3, utilitzarem el mètode d'igual freqüència per tal de mantenir la mateixa freqüència. 
+dis1<-table(discretize(x=titanic_data1$Age, method = "frequency", breaks =4, include.lowest = TRUE))
+dis1
+titanic_data1$AgeD[titanic_data1$Age <21] <- "Menors de 21 anys"
+titanic_data1$AgeD[titanic_data1$Age >= 21 & titanic_data1$Age < 28] <- "Entre 21 i 28 anys"
+titanic_data1$AgeD[titanic_data1$Age >= 28 & titanic_data1$Age < 39] <- "Entre 28 i 39 anys"
+titanic_data1$AgeD[titanic_data1$Age>= 39] <- "Majors de 39"
+
+# Tot seguit fem de la nova variable un factor
+titanic_data1$AgeD <-
+  factor(
+    titanic_data1$AgeD,
+    ordered = FALSE,
+    levels = c(
+      "Menors de 21 anys",
+      "Entre 21 i 28 anys",
+      "Entre 28 i 39 anys",
+      "Majors de 39"
+    )
+  )
+
+summary(titanic_data1$AgeD)
+
 ## Hi ha diferències en la supervivència segons l'edat?
 ##cal fer discretització d'edat (en rangs)
-table_Age<-table(titanic_data1$Age, titanic_data1$Survived)
-prop.table(table(titanic_data1$Age, titanic_data1$Survived), margin=1)
-
+table_AgeD<-table(titanic_data1$AgeD, titanic_data1$Survived)
+prop.table(table(titanic_data1$AgeD, titanic_data1$Survived), margin=1)
 
 #Mitjançant els gràfics de barres i les taules de contingencia, podem treure la següent informaicó: 
 ##La proporció d'homes i dones que van sobreviure és forá diferent, homes: 109, dones: 385, si ens fixem en el % respecte el seu gènere, en les dones és del 83% mentre que pels homes és del 23%.
 ##Referent a la classe en la que viatjaven, si ens fixem en el gràfic, el nombre de personas que més van sobreviure són els que viatjaven en 3 classe, cal dir, però que, el nombre de passatgers d'aquesta classe és molt major. Si ens fixem en el % dins de cada classe, són els de primera classe els que tenen una ràtio més alta de supervivència.
-## Pel que fa l'edat, 
+## Pel que fa l'edat, sembla que no hi ha diferència aparent pel que fa el fet de sobreviure. 
 
 par(mfrow=c(2,2))
 plot(table_Class, col = c("darkseagreen4","darksalmon"), main = "Survived vs. Class")
 plot(table_Sex, col = c("darkseagreen4","darksalmon"), main = "Survived vs. Sex")
-plot(table_Age, col = c("darkseagreen4","darksalmon"), main = "Survived vs. Age")
+plot(table_AgeD, col = c("darkseagreen4","darksalmon"), main = "Survived vs. Age")
 
 
 
