@@ -15,7 +15,7 @@ if(!require(gridExtra)){
   install.packages('gridExtra', repos='http://cran.us.r-project.org')
   library(gridExtra)
 }
-
+library(car)
 library(normtest)
 library(nortest)
 ## ---- echo=TRUE----------------------------------------------------------
@@ -167,13 +167,20 @@ pairs(titanic_data1[, c(6,10)])
 View(titanic_data1)
 
 
+#Comprovació de la HOMOGENEITAT DE LA VARIANCIA
+##Finalment comprovarem l'homoscedasticitat de les dades, és a dir, la igualtat de variàncies per Fare i Age.
+aggregate(Fare~Survived, data = titanic_data1, FUN = var)
+aggregate(Age~Survived, data = titanic_data1, FUN = var)
+##Ja que no tenim seguretat que provinguin d'una població normal, hem utilitzat el test de Levene amb la mediana com a mesura de centralitat, juntament amb el test no paramètric  Fligner-Killeen que també es basa en la mediana. 
+##Levene TEST
+levene <- filter(.data = titanic_data1, Survived %in% c("0", "1"))
+leveneTest(y = levene$Fare, group = levene$Survived, center = "median")
+leveneTest(y = levene$Age, group = levene$Survived, center = "median")
+##Fligner-Killeen
+fligner.test(Fare ~ Survived, data=titanic_data1)
+fligner.test(Age ~ Survived, data=titanic_data1)
 
-#Comprovació de la homogeneïtat de la variància.
-##Finalment comprovarem l'homoscedasticitat de les dades, és a dir, la igualtat de variàncies. 
-
-
-
-
+#En ambdos test, podem veure com en el cas de Fare, es rebutja la hipòtesis nula i per tant, la variança no és constant, en canvi, pel que fa l'edat, amb un nivell de confiança del 95%, podem concloure que en ambdos grups la variança no varia, és a dir, no s'ha trobat diferencia significativa entre la variança d'aquests. 
 
 
 ## 4.3 Aplicació proves estadístiques
@@ -200,3 +207,6 @@ ggplot(data=titanic_data1,aes(x=Sex,fill=Survived), colour="red")+geom_bar()
 
 #bibliografia
 #https://rpubs.com/Joaquin_AR/218465
+#http://www.cookbook-r.com/Statistical_analysis/Homogeneity_of_variance/
+
+
