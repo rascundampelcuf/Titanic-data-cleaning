@@ -209,17 +209,38 @@ plotbyAge<-ggplot(titanic_data1,aes(Age,fill=Survived))+geom_bar() +labs(x="Age"
 plotbySex<-ggplot(titanic_data1,aes(Sex,fill=Survived))+geom_bar() +labs(x="Sex", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Sex")
 grid.arrange(plotbyClass,plotbyAge,plotbySex,ncol=2)
 
-#Quants passatgers van sobreviure?
+
+
+##CRITERIS D'ÈXIT:
+
+## Va sobreviure més del 50% dels passatgers?
 table(titanic_data1$Survived)
 prop.table(table(titanic_data1$Survived))
+##CAL FER HIPOTESIS 
+
 
 ##Hi ha diferència entre la proporció d'homes i dones que van sobreviure?
 table_Sex<-table(titanic_data1$Sex, titanic_data1$Survived)
 prop.table(table(titanic_data1$Sex, titanic_data1$Survived), margin=1)
+##Per esbrinar si hi ha diferència, hem executat el test de fisher, el qual ens permet estudiar si existeix asociació entre dues variables qualitatives.
+#H0: Les variables són independents, és a dir, el fet de sobreviure no varia pel fet de ser un home o una dona, H1: Lles variables són dependents, el gènere si té relació amb el fet de sobreviure o no. 
+fisher.test(table_Sex, alternative = "two.sided")
+#Si fem el test X^2 també és significatiu.
+chisq.test(x = table_Sex)
+chisq.test(x = table_Sex)$residuals
+#Amb un 95% de confiança podem rebutjar el test, i per tant, afirmar que les dues variables estàn relacionades. 
+#S'esperava 11.7% més d'homes que sobrevisques i un 15.8% de dones menys.
 
-## Hi ha diferències en la supervivencia segons la classe en la que viatjaven ?
+## Hi ha diferències en la supervivencia segons la classe en la que viatjaven?
 table_Class<-table(titanic_data1$Pclass, titanic_data1$Survived)
 prop.table(table(titanic_data1$Pclass, titanic_data1$Survived), margin=1)
+#H0: Les variables són independents, és a dir, el fet de sobreviure no varia segons la classe, H1: Lles variables són dependents, la classe si té relació amb el fet de sobreviure o no. 
+fisher.test(table_Class, alternative = "two.sided")
+#Si fem el test X^2 també és significatiu.
+chisq.test(x = table_Class)
+chisq.test(x = table_Class)$residuals
+#Podem afirmar novament amb un 95% de confiança que hi ha relació entre ambdues variables.
+#S'esperava un 4.7% més de supervivents de la classe 3, en canvi de la classe 1 s'esperava un 5.8% menys. 
 
 
 # A continuació discretitzarem la variable edat. El nombre d'intervals escollits=3, utilitzarem el mètode d'igual freqüència per tal de mantenir la mateixa freqüència. 
@@ -250,15 +271,14 @@ summary(titanic_data1$AgeD)
 table_AgeD<-table(titanic_data1$AgeD, titanic_data1$Survived)
 prop.table(table(titanic_data1$AgeD, titanic_data1$Survived), margin=1)
 
-#Mitjançant els gràfics de barres i les taules de contingencia, podem treure la següent informaicó: 
-##La proporció d'homes i dones que van sobreviure és forá diferent, homes: 109, dones: 385, si ens fixem en el % respecte el seu gènere, en les dones és del 83% mentre que pels homes és del 23%.
-##Referent a la classe en la que viatjaven, si ens fixem en el gràfic, el nombre de personas que més van sobreviure són els que viatjaven en 3 classe, cal dir, però que, el nombre de passatgers d'aquesta classe és molt major. Si ens fixem en el % dins de cada classe, són els de primera classe els que tenen una ràtio més alta de supervivència.
-## Pel que fa l'edat, sembla que no hi ha diferència aparent pel que fa el fet de sobreviure. 
-
-par(mfrow=c(2,2))
-plot(table_Class, col = c("darkseagreen4","darksalmon"), main = "Survived vs. Class")
-plot(table_Sex, col = c("darkseagreen4","darksalmon"), main = "Survived vs. Sex")
-plot(table_AgeD, col = c("darkseagreen4","darksalmon"), main = "Survived vs. Age")
+#H0: Les variables són independents, és a dir, el fet de sobreviure no varia segons l'edat, H1: Lles variables són dependents, l'edat si té relació amb el fet de sobreviure o no. 
+fisher.test(table_AgeD, alternative = "two.sided")
+#Si fem el test X^2 també és significatiu.
+chisq.test(x = table_AgeD)
+chisq.test(x = table_AgeD)$residuals
+chisq.test(x = table_AgeD)$stdres
+#Podem afirmar novament amb un 95% de confiança que hi ha relació entre ambdues variables.
+#S'esperava un 2,3% més de supervivents en la franja d'edat 21-28 anys, en canvi, s'esperava un 2% menys en la de menors de 21.
 
 
 
@@ -292,15 +312,30 @@ summary(titanic_data1$FamilySizeD)
 
 table_Family<-table(titanic_data1$FamilySizeD, titanic_data1$Survived)
 prop.table(table(titanic_data1$FamilySizeD, titanic_data1$Survived), margin=1)
-#Podem veure com la probabilitat de sobreviure és major en les famílies entre 2 i 4 membres. 
+#Per veure si la diferència es significativa ho comprobarem estadísticament.
+#H0: Les variables són independents, és a dir, el fet de sobreviure no varia segons el tamany de la unitat familiar, H1: Lles variables són dependents.
+fisher.test(table_Family, alternative = "two.sided")
+#Si fem el test X^2 també és significatiu.
+chisq.test(x = table_Family)
+chisq.test(x = table_Family)$residuals
+chisq.test(x = table_Family)$stdres
+#Podem veure amb un nivell de significació del 5%, com el tamany de la unita familiar tmabé va influir, van sobreviure un 9.7% més de famílies de 2-4 membres del que s'esperava, per contra, s'esperava que un 7.8% més d'adults sols sobrevisques.
 
 
-
+##Mitjançant els gràfics de barres, les taules de contingencia i els tests realitzats podem concloure: 
+##La proporció d'homes i dones que van sobreviure és força diferent, homes: 109, dones: 385, si ens fixem en el % respecte el seu gènere, en les dones és del 83% mentre que pels homes és del 23%.
+##Referent a la classe en la que viatjaven, si ens fixem en el gràfic, el nombre de personas que més van sobreviure són els que viatjaven en 3 classe, cal dir, però que, el nombre de passatgers d'aquesta classe és molt major. Si ens fixem en el % dins de cada classe, són els de primera classe els que tenen una ràtio més alta de supervivència.
+##Cal destacar també que la proporció d'adults sols és més del 50%, i que la franja on hi trobem més viatjants és la franja d'edat entre 21 i 28 anys.
+##Després de realitzar els 4 test, podem veure que les diferències són significatives, i que tan l'edat, la classe en la que viatjaven, el gènere com el tamany de la unitat familiar van ser significatius per la superviència.
+par(mfrow=c(2,2))
+plot(table_Class, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Class")
+plot(table_Sex, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Sex")
+plot(table_AgeD, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Age")
+plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Family Size")
 
 
 
 # Correlació:
-
 aux_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare", "Survived")]
 aux_data$Fare <- round(aux_data$Fare)
 corr_matrix <- matrix(nc = 2, nr = 0)
@@ -369,10 +404,12 @@ auc <- auc@y.values[[1]]
 auc
 
 
-
 ## ---- echo=TRUE----------------------------------------------------------
 
 #bibliografia
 #https://rpubs.com/Joaquin_AR/218465
 #http://www.cookbook-r.com/Statistical_analysis/Homogeneity_of_variance/
 #https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/aggregate
+#https://rpubs.com/ovolchenko/chisq2
+#https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/fisher.test
+#https://rpubs.com/Joaquin_AR/220579
