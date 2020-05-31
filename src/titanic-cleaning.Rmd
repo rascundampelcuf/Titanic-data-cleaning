@@ -7,12 +7,33 @@ output:
     number_sections: yes
     toc: yes
 header-includes: \renewcommand{\contentsname}{Índex}
+urlcolor: blue
 ---
 
 
 \pagebreak
 
 # Descripció del dataset
+
+El conjunt de dades escollit recull informació dels passatgers del titanic, en el que es pot analitzar la superviència i les característiques d'aquests. 
+Aquest conjunt de dades s'ha obtingut de la web de Kaggle. S'hi pot accedir a partir de l'enllaç que es mostra a continuació:
+
+https://www.kaggle.com/c/titanic
+
+EL conjunt de dades utilitzat està format per 1309 registres amb 12 atributs. Els atributs d'aquest conjunt de dades són els següents:
+
+* **passengerId**: identificador dels registres del dataset.
+* **survived**: indica si el passatger va sobreviure (0=No, 1=Sí).
+* **pclass**: indica la classe en la que viatjava el passatger (1=1a, 2=2a, 3=3a).
+* **name**: nom del passatger.
+* **sex**: gènere del passatger (*female* o *male*).
+* **age**: edat del passatger.
+* **sibsp**: número de germans i cònjugues a bord del Titànic.
+* **parch**: número de pares i fills a bord del Titànic.
+* **ticket**: número del bitllet
+* **fare**: preu de compra del bitllet.
+* **cabin**: número de cabina on viatjava el passatger.
+* **embarked**: port on va embarcar el passatger (C=Cherbourg, Q=Queenstown, S=Southampton).
 
 # Neteja de les dades
 ## Selecció de les variables
