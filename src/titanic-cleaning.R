@@ -28,6 +28,14 @@ if(!require(ROCR)){
   install.packages("ROCR")
   library(ROCR)
 }
+if(!require(caret)){
+  install.packages("caret")
+  library(caret)
+}
+if(!require(arules)){
+  install.packages("arules")
+  library(arules)
+}
 library(normtest)
 library(nortest)
 
@@ -152,7 +160,6 @@ shapiro.test(x=titanic_data1$Fare)
 
 #TEST Lilliefors
 #Asumeix que la media y varianza poblacional són desconegudes. 
-library("nortest")
 lillie.test(x=titanic_data1$Fare)
 ##rebutjem hipotesis nul.la, la diferència és estadísticament significativa.
 ##Problemes de la manca de normalitat; estimadors mínim-quadrats no són eficients y els intervals de confiança són aproximats no exactes. 
@@ -174,7 +181,6 @@ ggplot(titanic_data1,aes(Age)) + geom_density(size=1, alpha= 0.6)+ ylab("DENSITA
 
 #TEST Lilliefors
 #Asumeix que la media y varianza poblacional són desconegudes. 
-library("nortest")
 lillie.test(x=titanic_data1$Age)
 ##rebutjem hipotesis nul.la, la diferència és estadísticament significativa.
 ##Problemes de la manca de normalitat; estimadors mínim-quadrats no són eficients y els intervals de confiança són aproximats no exactes.
