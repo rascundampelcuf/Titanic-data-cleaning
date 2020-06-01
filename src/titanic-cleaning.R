@@ -139,7 +139,7 @@ hist(x=titanic_data1$Fare, main="Histograma Fare", xlab="Fare", ylab="Frecuencia
 #A continuació compararem els quartils de la distribució observada amb els quartils teòrics d'una distribució normal, com més s'aproximen a les dades d'una normal, més alineats estan els punts al voltant de la recta.
 qqnorm(titanic_data1$Fare) 
 qqline(titanic_data1$Fare, col="red")
-ggplot(titanic_data1,aes(Fare)) + geom_density(size=1, alpha= 0.6)+ ylab("DENSIDAD")
+ggplot(titanic_data1,aes(Fare)) + geom_density(size=1, alpha= 0.6)+ ylab("DENSITAT")
 
 #Mètode analític per contrastar la Normalitat
 ##Hipòtesis nul.la: les dades procedeixen d'una distribució normal. 
@@ -160,12 +160,12 @@ lillie.test(x=titanic_data1$Fare)
 #VARIABLE AGE
 summary(titanic_data1$Age)
 #Representació de la distribució de la variable Fare mitjançant un histograma: 
-hist(x=titanic_data1$Age, main="Histograma Age", xlab="Age", ylab="Frecuencia", col = "green yellow", ylim=c(0,200), xlim = c(0,100))
+hist(x=titanic_data1$Age, main="Histograma Age", xlab="Age", ylab="Frecuencia", col = "green yellow", ylim=c(0,350), xlim = c(0,100))
 
 #A continuació compararem els quartils de la distribució observada amb els quartils teòrics d'una distribució normal, com més s'aproximen a les dades d'una normal, més alineats estan els punts al voltant de la recta.
 qqnorm(titanic_data1$Age) 
 qqline(titanic_data1$Age, col="red")
-ggplot(titanic_data1,aes(Age)) + geom_density(size=1, alpha= 0.6)+ ylab("DENSIDAD")
+ggplot(titanic_data1,aes(Age)) + geom_density(size=1, alpha= 0.6)+ ylab("DENSITAT")
 
 #Mètode analític per contrastar la Normalitat
 ##Hipòtesis nul.la: les dades procedeixen d'una distribució normal. 
@@ -180,7 +180,6 @@ lillie.test(x=titanic_data1$Age)
 pairs(titanic_data1[, c(6,10)])
 View(titanic_data1)
 
-
 #Comprovació de la HOMOGENEITAT DE LA VARIANCIA
 ##Finalment comprovarem l'homoscedasticitat de les dades, és a dir, la igualtat de variàncies per Fare i Age.
 aggregate(Fare~Survived, data = titanic_data1, FUN = var)
@@ -194,7 +193,7 @@ leveneTest(y = levene$Age, group = levene$Survived, center = "median")
 fligner.test(Fare ~ Survived, data=titanic_data1)
 fligner.test(Age ~ Survived, data=titanic_data1)
 
-#En ambdos test, podem veure com en el cas de Fare, es rebutja la hipòtesis nula i per tant, la variança no és constant, en canvi, pel que fa l'edat, amb un nivell de confiança del 95%, podem concloure que en ambdos grups la variança no varia, és a dir, no s'ha trobat diferencia significativa entre la variança d'aquests. 
+#En ambdos test, podem veure com en les dues variablescas de Fare, es rebutja la hipòtesis nula i per tant, la variança no és constant, en canvi, pel que fa l'edat, amb un nivell de confiança del 95%, podem concloure que en ambdos grups la variança no varia, és a dir, no s'ha trobat diferencia significativa entre la variança d'aquests. 
 
 
 
@@ -204,20 +203,23 @@ fligner.test(Age ~ Survived, data=titanic_data1)
 ###Per a això, en primer lloc hem dut a terme un gràfic mitjançant diagrames de barres amb la quantitat de morts i supervivents segons la classe a la que viatjaven, l'edat o el sexe.
 ###D'altra banda, per a obtenir les dades que estem veient utilitzarem la comanda table per a dues variables que ens proporciona una taula de contingència.
 
-plotbyClass<-ggplot(titanic_data1,aes(Pclass,fill=Survived))+geom_bar() +labs(x="Class", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Class")
-plotbyAge<-ggplot(titanic_data1,aes(Age,fill=Survived))+geom_bar() +labs(x="Age", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Age")
-plotbySex<-ggplot(titanic_data1,aes(Sex,fill=Survived))+geom_bar() +labs(x="Sex", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("black","#008000"))+ggtitle("Survived by Sex")
+plotbyClass<-ggplot(titanic_data1,aes(Pclass,fill=Survived))+geom_bar() +labs(x="Class", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("darksalmon","darkseagreen4"))+ggtitle("Survived by Class")
+plotbyAge<-ggplot(titanic_data1,aes(Age,fill=Survived))+geom_bar() +labs(x="Age", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("darksalmon","darkseagreen4"))+ggtitle("Survived by Age")
+plotbySex<-ggplot(titanic_data1,aes(Sex,fill=Survived))+geom_bar() +labs(x="Sex", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("darksalmon","darkseagreen4"))+ggtitle("Survived by Sex")
 grid.arrange(plotbyClass,plotbyAge,plotbySex,ncol=2)
 
 
 
 ##CRITERIS D'ÈXIT:
 
-## Va sobreviure més del 50% dels passatgers?
-table(titanic_data1$Survived)
+## Van sobreviure més del 50% dels passatgers? Existeix diferència significativa per un nivell de significació del 5%?
+#Per poder contrastar la hipòtesis, utilitzarem el test binominal exacte. 
+#H0: la proporció és major del 50%. 
+#H1: la proporció no és major. 
+tableSurvived<-table(titanic_data1$Survived)
 prop.table(table(titanic_data1$Survived))
-##CAL FER HIPOTESIS 
-
+binom.test(x = c(494, 815), alternative = "greater", conf.level = 0.95)
+#Amb un nivell de confiança del 95% podem concloure que no va sobreviure més del 50% dels passatgers. 
 
 ##Hi ha diferència entre la proporció d'homes i dones que van sobreviure?
 table_Sex<-table(titanic_data1$Sex, titanic_data1$Survived)
@@ -402,10 +404,40 @@ plot(ROCRperf, colorize = TRUE, text.adj = c(-0.2,1.5), print.cutoffs.at = seq(0
 auc <- performance(ROCRpred, measure = "auc")
 auc <- auc@y.values[[1]]
 auc
+## ---- echo=TRUE---------------------------------------------------------------------------------
 
 
-## ---- echo=TRUE----------------------------------------------------------
+##5----REPRESENTACIÓ DELS RESULTATS--------------------------------------------------------------
 
+par(mfrow=c(2,2))
+plot(table_Class, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Class")
+plot(table_Sex, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Sex")
+plot(table_AgeD, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Age")
+plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Family Size")
+
+#+ gràfic correlació + regressió 
+
+## ---- echo=TRUE-------------------------------------------------------------------------------
+
+
+
+##6----CONCLUSIÓ-------------------------------------------------------------------------------
+
+
+##Mitjançant els gràfics de barres, les taules de contingencia i els tests realitzats podem concloure: 
+#Que els passatgers que van sobreviure és menys del 50%, concretament només representen un 37% del total. 
+##La proporció d'homes i dones que van sobreviure és força diferent, homes: 109, dones: 385, si ens fixem en el % respecte el seu gènere, en les dones és del 83% mentre que pels homes és del 23%.
+##Referent a la classe en la que viatjaven, el nombre de personas que més van sobreviure són els que viatjaven en 3 classe, cal dir, però que, el nombre de passatgers d'aquesta classe és molt major. Si ens fixem en el % dins de cada classe, són els de primera classe els que tenen una ràtio més alta de supervivència.
+##Cal destacar també que la proporció d'adults sols és més del 50%, i que la franja on hi trobem més viatjants és la franja d'edat entre 21 i 28 anys.
+##Després de realitzar els 4 test d'independència, podem veure que les diferències són significatives, i que tan l'edat, la classe en la que viatjaven, el gènere com el tamany de la unitat familiar van ser rellevants per la superviència.
+#Van sobreviure més dones que homes, la classe amb majors supervivents és la Classe 1, pel que fa l'edat s'esperava més supervivents entre la franja dels 21-28 d'anys de la que es va produir, i finalment, pel que fa el tamany familiar també va tenir un paper important, on destaquen les famílies de 2-4 membres destacan com a supervivents, m'entre que pel que fa els adults que viatjeven sols s'esperava una ràtio de supervients major.
+
+
+#FALTA CONCLUSIÓ CORRELACIÓ + REGRESSIÓ
+
+
+
+## ---- echo=TRUE-------------------------------------------------------------------------------
 #bibliografia
 #https://rpubs.com/Joaquin_AR/218465
 #http://www.cookbook-r.com/Statistical_analysis/Homogeneity_of_variance/
