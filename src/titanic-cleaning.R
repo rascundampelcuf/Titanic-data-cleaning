@@ -139,7 +139,7 @@ boxplot.stats(titanic_data$Fare)$out
 #4.1 Selecció de dades: 
 ##Totes les variables que tenim en el dataset fan referència a característiques dels passatgers del titanic.
 ##Tot i això, podem precindir de la columna CABIN, ja que per l'anàlis que durem a terme, no serà necessari la precisió tència del número de cabina.
-titanic_data1<- select(titanic_data, -Cabin)
+titanic_data1<- select(titanic_data, -c(Cabin, PassengerId, Ticket, Name))
 summary(titanic_data1)
 
 #4.2 Normalitat i homogeneïtat de la variància
@@ -347,30 +347,9 @@ plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. F
 
 
 # Correlació:
-<<<<<<< HEAD
-aux_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare", "Survived")]
-aux_data$Fare <- round(aux_data$Fare)
-corr_matrix <- matrix(nc = 2, nr = 0)
-colnames(corr_matrix) <- c("estimate", "p-value")
-for (i in 1:(ncol(aux_data) - 1)) {
-  spearman_test = cor.test(aux_data[,i],
-                           aux_data[,length(aux_data)],
-                           method = "spearman")
-  corr_coef = spearman_test$estimate
-  p_val = spearman_test$p.value
-  
-  pair = matrix(ncol = 2, nrow = 1)
-  pair[1][1] = corr_coef
-  pair[2][1] = p_val
-  corr_matrix <- rbind(corr_matrix, pair)
-  rownames(corr_matrix)[nrow(corr_matrix)] <- colnames(aux_data)[i]
-}
-print(corr_matrix)
-=======
 aux_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare")]
 M<-cor(aux_data)
 corrplot(M, type="upper")
->>>>>>> a490ef505715dff2013f65bfd48569519db3a396
 
 
 # Regressió logística
@@ -398,7 +377,7 @@ model <- glm(Survived ~.,family=binomial(link='logit'),data=train)
 ## Model Summary
 summary(model)
 
-## Using anova() to analyze the table of devaiance
+## Using anova() to analyze the table of deviance
 anova(model, test="Chisq")
 
 ## Predicting Test Data
