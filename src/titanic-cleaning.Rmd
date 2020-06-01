@@ -11,6 +11,50 @@ header-includes: \renewcommand{\contentsname}{Índex}
 urlcolor: blue
 ---
 
+```{r, include=FALSE}
+library(knitr)
+library(dplyr)
+library(modeest)
+library(normtest)
+library(nortest)
+if(!require(ggplot2)){
+  install.packages('ggplot2', repos='http://cran.us.r-project.org')
+  library(ggplot2)
+}
+if(!require(grid)){
+  install.packages('grid', repos='http://cran.us.r-project.org')
+  library(grid)
+}
+if(!require(gridExtra)){
+  install.packages('gridExtra', repos='http://cran.us.r-project.org')
+  library(gridExtra)
+}
+library(car)
+if(!require(dummies)){
+  install.packages("dummies")
+  library(dummies)
+}
+if(!require(e1071)){
+  install.packages("e1071")
+  library(e1071)
+}
+if(!require(ROCR)){
+  install.packages("ROCR")
+  library(ROCR)
+}
+if(!require(caret)){
+  install.packages("caret")
+  library(caret)
+}
+if(!require(arules)){
+  install.packages("arules")
+  library(arules)
+}
+if(!require(corrplot)){
+  install.packages("corrplot")
+  library(corrplot)
+}
+```
 
 \pagebreak
 
@@ -21,7 +65,7 @@ Aquest conjunt de dades s'ha obtingut de la web de Kaggle. S'hi pot accedir a pa
 
 https://www.kaggle.com/c/titanic
 
-EL conjunt de dades utilitzat està format per 1309 registres amb 12 atributs. Els atributs d'aquest conjunt de dades són els següents:
+El conjunt de dades utilitzat està format per 1309 registres amb 12 atributs dividit en 2 fitxers CSV, un de *train* i un de *test*, ja que aquest conjunt de dades està preparat per ser utilitzat per tasques de predicció. Els atributs d'aquest conjunt de dades són els següents:
 
 * **passengerId**: identificador dels registres del dataset.
 * **survived**: indica si el passatger va sobreviure (0=No, 1=Sí).
@@ -36,14 +80,127 @@ EL conjunt de dades utilitzat està format per 1309 registres amb 12 atributs. E
 * **cabin**: número de cabina on viatjava el passatger.
 * **embarked**: port on va embarcar el passatger (C=Cherbourg, Q=Queenstown, S=Southampton).
 
+Aquest conjunt de dades és important perquè representa les dades d'un dels naufragis més infames de la història. A més, ens permet abastir tots els aspectes importants a tenir en compte a l'hora de dur a terme aquesta pràctica.
+
+La pregunta que intenta respondre és la de quins són els factors que van afavorir a un passatger sobreviure al naufragi. Si bé hi havia un element de sort en la supervivència dels passatgers, sembla que alguns grups de persones tenien més probabilitats de sobreviure que d'altres.
+
 # Neteja de les dades
+Abans de començar amb la neteja de les dades, procedim a realitzar les lectures dels fitxers en format CSV en el que es troben. El procediment és el de carregar la informació dels tres fitxers i unir-les posteriorment.
+
+En la secció anterior s'ha parlat de dos fitxers de tipus CSV, i ara se n'ha parlat de tres. Això es deu a que al fitxer `test.csv` li falta un atribut respecte al fitxer `train.csv`, que és el de `Survived`. La informació referent a la supervivència dels passatgers del fitxer `test.csv` es troba en un altre fitxer anomenat `gender_submission.csv` que té només dues columnes: `PassengerId` i `Survived`.
+
+El primer que fem és carregar la informació de tots els fitxers CSV. Després fem un *merge* de les dades de `test.csv` i `gender_submission.csv` utilitzant la funció `merge` amb l'atribut `PassengerId` com a clau comuna entre les dues taules. Per acabar s'uneixen totes les dades de *train* i *test* en un sol *dataframe* utilitzant la funció `rbind`.
+
+```{r}
+# Lectura de les dades
+titanic_train <- read.csv("../data/train.csv")
+titanic_test <- read.csv("../data/test.csv")
+titanic_gender_submission <- read.csv("../data/gender_submission.csv")
+titanic_test <- merge(titanic_test, titanic_gender_submission, by="PassengerId")
+titanic_data <- rbind(titanic_train, titanic_test)
+head(titanic_data)
+```
+
+```{r}
+# Tipus de dada assignat a cada camp
+sapply(titanic_data, function(x) class(x))
+```
+
+Podem observar que els tipus de dades assignats automàticament per R a les nostres variables no s'acaben de correspondre amb el domini d'aquestes. Aquest és el cas de l'atribut `Survived`. R detecta que es tracta d'un *integer* quan en realitat es tracta d'un *factor*, pel que procedim a assignar-li el tipus que nosaltres volem.
+
+```{r}
+# Canvi del tipus del camp 'Survived'
+titanic_data$Survived <- factor(titanic_data$Survived)
+```
+
+
+## Selecció de les dades d'interès
+Totes les variables que tenim en el dataset fan referència a característiques dels passatgers del titanic.
+Tot i això, podem precindir de les columnes *PassengerId*, *Name*, *Ticket* i *Cabin* ja que no aporten informació rellevant de cara a la pregunta que respon aquest conjunt de dades.
+
+```{r}
+# Eliminació de les columes 'PassengerId', 'Name', 'Ticket' i 'Cabin'
+titanic_data <- select(titanic_data, -c(PassengerId, Name, Ticket, Cabin))
+summary(titanic_data)
+```
+
 ## Dades amb elements buits (valors perduts)
+Aquest conjunt de dades conté dades amb elements buits representats de dues maneres diferents: amb el valor NA (*Not Available*) i amb un espai en blanc, pel que es procedeix a comprovar quins camps contenen elements buits i en quina quantitat.
+
+```{r}
+# Número de valors perduts per camp
+colSums(is.na(titanic_data))
+colSums(titanic_data == "")
+```
+
+Com es pot observar tenim 2 valors en blanc a la variable *Embarked*, 1 valor NA a *Fare* i 263 valors NA a *Age*.
+
+Primer de tot tractarem els valors en blanc de la variable *Embarked*. Ens basarem en utilitzar una mesura de tendència central i, al tractar-se d'una variable categòrica, utilitzarem la **moda**.
+
+```{r}
+# Consulta de la moda de la variable 'Embarked'
+mlv(titanic_data$Embarked, method = "mfv")
+```
+
+Com es pot observar, al ser *S* la moda prenem aquest valor per omplir als valors buits de la variable.
+
+```{r}
+# Imputació dels valors buits de la variable 'Embarked'
+titanic_data$Embarked[titanic_data$Embarked == ""] = "S"
+```
+
+Per tractar el valor perdut a la variable *Fare* s'utilitzarà la **mitjana**.
+
+```{r}
+# Imputació dels valors buits de la variable 'Fare'
+titanic_data[is.na(titanic_data$Fare),]$Fare <- mean(titanic_data$Fare, na.rm = TRUE)
+```
+
+Per acabar, per tractar els valors perduts de la variable *Age* s'utilitzarà la **mitjana**. Per dur a terme la obtenció d'aquesta mitjana, enlloc d'obtenir la mitjana de l'atribut *Age* sencer, tindrem en compte el gènere (*Sex*) i la classe en la que viatjava (*Pclass*).
+A la gràfica següent es pot observar la relació entre els atributs *Age* i *Pclass* per dones i per homes.
+
+```{r}
+# Visualitzem la relació entre les variables 'Age' i 'Pclass'
+par(mfrow = c(1,2))
+female_people = titanic_data[titanic_data$Sex == "male",]
+male_people = titanic_data[titanic_data$Sex == "female",]
+boxplot(female_people$Age~female_people$Pclass, main = "Pclass by age (female)",
+        xlab = "Pclass", ylab = "Age")
+boxplot(male_people$Age~male_people$Pclass, main = "Pclass by age (male)",
+        xlab = "Pclass", ylab = "Age")
+```
+
+Per tractar els valors perduts tindrem en compte la informació observada a la gràfica anterior. Per realitzar aquesta tasca s'ha creat una funció `AgeMean` per obtenir la mitjana d'edats de les dones i dels homes segons la classe, i després s'ha creat una altra funció assignar als passatgers que tenen l'edat en blanc la mitjana corresponent al seu gènere i a la classe en la que viatjava.
+
+```{r}
+AgeMean <- function(age) {
+  round(summary(age)['Mean'])
+}
+
+female_mean_ages = tapply(female_people$Age, female_people$Pclass, AgeMean)
+male_mean_ages = tapply(male_people$Age, male_people$Pclass, AgeMean)
+
+AgeImpute <- function(row) {
+  sex <- row['Sex']
+  age <- row['Age']
+  pclass <- row['Pclass']
+  value <- age
+  if (is.na(age)) {
+    if (sex == "female") {
+      value <- female_mean_ages[pclass]
+    } else {
+      value <- male_mean_ages[pclass]
+    }
+  }
+  return(as.numeric(value))
+}
+
+titanic_data$Age <- apply(titanic_data[, c("Sex", "Age", "Pclass")], 1, AgeImpute)
+```
 
 ## Identificació de valors extrems
 
 # Anàlisi de les dades
-## Selecció de les dades d'interès
-
 ## Comprovació de la normalitat i homogeneïtat de la variància
 
 ## Aplicació de proves estadístiques
