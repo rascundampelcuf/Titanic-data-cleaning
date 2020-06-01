@@ -52,7 +52,7 @@ library(nortest)
 #read Data
 titanic_train <- read.csv("../data/train.csv")
 titanic_test <- read.csv("../data/test.csv")
-## ---- echo=TRUE----------------------------------------------------------
+## ----------------------------------------------------------------------
 
 ##----2. INTEGRACIÓ -----------------------------------------------------
 ##La base de dades està dividia en tres parts, la part de test té 418 registres i 11 variables, mentre que la de train té 891 observacions i 12 variables, la variable que no té el dataset test, és la variable Survived, que tenim en el fitxer anomenat gender_submission.
@@ -68,8 +68,8 @@ str(titanic_data)
 #El dataset final està format per 1309 observacions i 12 variables 
 dim(titanic_data)
 summary(titanic_data)
-
-## ---- echo=TRUE----------------------------------------------------------
+titanic_data$Survived<-factor(titanic_data$Survived)
+## ---------------------------------------------------------------------
 
 
 ##----3. NETEJA DE DADES------------------------------------------------
@@ -79,23 +79,28 @@ colSums(titanic_data== "")
 
 #Tractament valors buits variable "Embarked": 
 #Ens basarem en usar una mesura de tendència central,en aquest cas al ser una variable categòrica usarem la moda 
-mlv(titanic_data$Embarked, method = "mfv") 
+mlv(titanic_data$Embarked, method = "mfv")
 ##El ser S la moda: prenem el valor "S" per els valors buits de la variable.
-titanic_data$Embarked[titanic_data$Embarked==""]="C"
+titanic_data$Embarked[titanic_data$Embarked==""]="S"
 
 #Tractament del valor Fare, mitjançant la mediana:
-titanic_data[!complete.cases(titanic_data$Fare),]
-titanic_data$Fare[1044] <- mean(titanic_data$Fare, na.rm = TRUE)
+titanic_data[is.na(titanic_data$Fare),]$Fare <- mean(titanic_data$Fare, na.rm = TRUE)
 
 # Age missing values
+
+# Visualitzem la relació entre les variables "Age" i "Pclass":
+par(mfrow=c(1,2))
+female_people = titanic_data[titanic_data$Sex=="male",]
+male_people = titanic_data[titanic_data$Sex=="female",]
+boxplot(female_people$Age~female_people$Pclass, main="Pclass by age (female)", xlab="Pclass", ylab="Age")
+boxplot(male_people$Age~male_people$Pclass, main="Pclass by age (male)", xlab="Pclass", ylab="Age")
+
 age_mean <- function(age) {
   round(summary(age)['Mean'])
 }
-female_people = titanic_data[titanic_data$Sex=="male",]
-male_people = titanic_data[titanic_data$Sex=="female",]
 
-female_mean_ages = tapply(female_people$Age, female_people$Pclass, age_mean)
-male_mean_ages = tapply(male_people$Age, male_people$Pclass, age_mean)
+female_mean_ages = tapply(female_people$Age, female_people$Pclass, AgeMean)
+male_mean_ages = tapply(male_people$Age, male_people$Pclass, AgeMean)
 
 AgeImpute <- function(row) {
   sex <- row['Sex']
