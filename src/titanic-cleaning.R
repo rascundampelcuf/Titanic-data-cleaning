@@ -30,6 +30,7 @@ if(!require(ROCR)){
 }
 library(normtest)
 library(nortest)
+
 ## ---- echo=TRUE----------------------------------------------------------
 
 ##----1. DESCRIPCIÓ del DATASET-------------------------------------------
@@ -211,7 +212,6 @@ grid.arrange(plotbyClass,plotbyAge,plotbySex,ncol=2)
 
 
 ##CRITERIS D'ÈXIT:
-
 ## Van sobreviure més del 50% dels passatgers? Existeix diferència significativa per un nivell de significació del 5%?
 #Per poder contrastar la hipòtesis, utilitzarem el test binominal exacte. 
 #H0: la proporció és major del 50%. 
@@ -408,13 +408,11 @@ auc
 
 
 ##5----REPRESENTACIÓ DELS RESULTATS--------------------------------------------------------------
-
 par(mfrow=c(2,2))
 plot(table_Class, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Class")
 plot(table_Sex, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Sex")
 plot(table_AgeD, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Age")
 plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Family Size")
-
 #+ gràfic correlació + regressió 
 
 ## ---- echo=TRUE-------------------------------------------------------------------------------
