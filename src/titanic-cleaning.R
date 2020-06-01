@@ -361,7 +361,6 @@ for (i in 1:(ncol(aux_data) - 1)) {
   corr_matrix <- rbind(corr_matrix, pair)
   rownames(corr_matrix)[nrow(corr_matrix)] <- colnames(aux_data)[i]
 }
-
 print(corr_matrix)
 
 
