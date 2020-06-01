@@ -6,6 +6,7 @@ output:
   pdf_document:
     number_sections: yes
     toc: yes
+    toc_depth: 3
 header-includes: \renewcommand{\contentsname}{Índex}
 urlcolor: blue
 ---
@@ -36,19 +37,19 @@ EL conjunt de dades utilitzat està format per 1309 registres amb 12 atributs. E
 * **embarked**: port on va embarcar el passatger (C=Cherbourg, Q=Queenstown, S=Southampton).
 
 # Neteja de les dades
-## Selecció de les variables
-
 ## Dades amb elements buits (valors perduts)
 
 ## Identificació de valors extrems
 
 # Anàlisi de les dades
+## Selecció de les dades d'interès
+
 ## Comprovació de la normalitat i homogeneïtat de la variància
 
 ## Aplicació de proves estadístiques
-### Matriu de correlació
+### Contrast d'hipòtesis
 
-### $X^{2}$
+### Matriu de correlació
 
 ### Regressió logística
 
