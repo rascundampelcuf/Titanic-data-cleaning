@@ -36,6 +36,10 @@ if(!require(arules)){
   install.packages("arules")
   library(arules)
 }
+if(!require(corrplot)){
+  install.packages("corrplot")
+  library(corrplot)
+}
 library(normtest)
 library(nortest)
 ## ---- echo=TRUE----------------------------------------------------------
@@ -342,27 +346,10 @@ plot(table_AgeD, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Age
 plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Family Size")
 
 
-
 # Correlació:
-aux_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare", "Survived")]
-aux_data$Fare <- round(aux_data$Fare)
-corr_matrix <- matrix(nc = 2, nr = 0)
-colnames(corr_matrix) <- c("estimate", "p-value")
-for (i in 1:(ncol(aux_data) - 1)) {
-  spearman_test = cor.test(aux_data[,i],
-                           aux_data[,length(aux_data)],
-                           method = "spearman")
-  corr_coef = spearman_test$estimate
-  p_val = spearman_test$p.value
-  
-  pair = matrix(ncol = 2, nrow = 1)
-  pair[1][1] = corr_coef
-  pair[2][1] = p_val
-  corr_matrix <- rbind(corr_matrix, pair)
-  rownames(corr_matrix)[nrow(corr_matrix)] <- colnames(aux_data)[i]
-}
-
-print(corr_matrix)
+aux_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare")]
+M<-cor(aux_data)
+corrplot(M, type="upper")
 
 
 # Regressió logística
