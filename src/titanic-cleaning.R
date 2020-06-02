@@ -44,6 +44,7 @@ library(normtest)
 library(nortest)
 library(corrplot)
 library(Hmisc)
+library(caret)
 ## ---- echo=TRUE----------------------------------------------------------
 
 ##----1. DESCRIPCIÓ del DATASET-------------------------------------------
@@ -53,7 +54,7 @@ library(Hmisc)
 #read Data
 titanic_train <- read.csv("../data/train.csv")
 titanic_test <- read.csv("../data/test.csv")
-## ---- echo=TRUE----------------------------------------------------------
+## ----------------------------------------------------------------------
 
 ##----2. INTEGRACIÓ -----------------------------------------------------
 ##La base de dades està dividia en tres parts, la part de test té 418 registres i 11 variables, mentre que la de train té 891 observacions i 12 variables, la variable que no té el dataset test, és la variable Survived, que tenim en el fitxer anomenat gender_submission.
@@ -69,8 +70,8 @@ str(titanic_data)
 #El dataset final està format per 1309 observacions i 12 variables 
 dim(titanic_data)
 summary(titanic_data)
-
-## ---- echo=TRUE----------------------------------------------------------
+titanic_data$Survived<-factor(titanic_data$Survived)
+## ---------------------------------------------------------------------
 
 
 ##----3. NETEJA DE DADES------------------------------------------------
@@ -80,24 +81,31 @@ colSums(titanic_data== "")
 
 #Tractament valors buits variable "Embarked": 
 #Ens basarem en usar una mesura de tendència central,en aquest cas al ser una variable categòrica usarem la moda 
+
 mlv(titanic_data$Embarked, method = "mfv") 
+mlv(titanic_data$Embarked, method = "mfv")
 
 ##El ser S la moda: prenem el valor "S" per els valors buits de la variable.
 titanic_data$Embarked[titanic_data$Embarked==""]="S"
 
 #Tractament del valor Fare, mitjançant la mediana:
-titanic_data[!complete.cases(titanic_data$Fare),]
-titanic_data$Fare[1044] <- mean(titanic_data$Fare, na.rm = TRUE)
+titanic_data[is.na(titanic_data$Fare),]$Fare <- mean(titanic_data$Fare, na.rm = TRUE)
 
 # Age missing values
+
+# Visualitzem la relació entre les variables "Age" i "Pclass":
+par(mfrow=c(1,2))
+female_people = titanic_data[titanic_data$Sex=="male",]
+male_people = titanic_data[titanic_data$Sex=="female",]
+boxplot(female_people$Age~female_people$Pclass, main="Pclass by age (female)", xlab="Pclass", ylab="Age")
+boxplot(male_people$Age~male_people$Pclass, main="Pclass by age (male)", xlab="Pclass", ylab="Age")
+
 age_mean <- function(age) {
   round(summary(age)['Mean'])
 }
-female_people = titanic_data[titanic_data$Sex=="male",]
-male_people = titanic_data[titanic_data$Sex=="female",]
 
-female_mean_ages = tapply(female_people$Age, female_people$Pclass, age_mean)
-male_mean_ages = tapply(male_people$Age, male_people$Pclass, age_mean)
+female_mean_ages = tapply(female_people$Age, female_people$Pclass, AgeMean)
+male_mean_ages = tapply(male_people$Age, male_people$Pclass, AgeMean)
 
 AgeImpute <- function(row) {
   sex <- row['Sex']
@@ -295,7 +303,6 @@ chisq.test(x = table_AgeD)$stdres
 #S'esperava un 2,3% més de supervivents en la franja d'edat 21-28 anys, en canvi, s'esperava un 2% menys en la de menors de 21.
 
 
-
 ##A més a més també ens interesava conèixer si la probabilitat de sobreviure tenia alguna relació amb el tamany de la família?
 #Creació nova variable: 
 titanic_data1$FamilySize <- titanic_data1$SibSp + titanic_data1$Parch +1;
@@ -366,54 +373,37 @@ rcorr(as.matrix(aux_data))
 ##Destacan  les relacions de tarifes amb l'edat, on la correlació és positiva, de manera que a major edat major preu han pagat pel tiquet, i el mateix passa amb el tamany de la família i el preu. 
 
 
-# Regressió logística
+# Regressió logística: volem predir el fet de sobreviure o no, de manera que ens trobem amb una variable discreta, concretament binaria (0,1), si utilitzessim una model lineal per predir un grup binàri estariem obtenint un model erroni.
 ## Check number of uniques values for each of the column to find out columns which we can convert to factors
 sapply(titanic_data, function(x) length(unique(x)))
 
-## Removing Cabin as it has very high missing values, passengerId, Ticket and Name are not required
-titanic_data2 <- titanic_data %>% select(-c(Cabin, PassengerId, Ticket, Name))
-
-## Converting "Survived","Pclass","Sex","Embarked" to factors
-for (i in c("Survived","Pclass","Sex","Embarked")){
-  titanic_data2[,i]=as.factor(titanic_data2[,i])
+## Converting "Survived","Pclass" to factors
+for (i in c("Survived","Pclass")){
+  titanic_data1[,i]=as.factor(titanic_data1[,i])
 }
 
-## Create dummy variables for categorical variables
-titanic_data2 <- dummy.data.frame(titanic_data2, names=c("Pclass","Sex","Embarked"), sep="_")
-
 ## Splitting training and test data
-train <- titanic_data2[1:667,]
-test <- titanic_data2[668:889,]
+train <- titanic_data1[1:667,]
+test <- titanic_data1[668:889,]
 
-## Model Creation
+##Model
 model <- glm(Survived ~.,family=binomial(link='logit'),data=train)
 
 ## Model Summary
 summary(model)
 
-## Using anova() to analyze the table of deviance
-anova(model, test="Chisq")
-
-
-#Model 2 probar sense les variables no significatives + predicció.
-
 ## Predicting Test Data
 result <- predict(model,newdata=test,type='response')
 result <- ifelse(result > 0.5,1,0)
 
+fitted.probabilities<-predict(model, newdata=test, type='response')
+fitted.results <- ifelse(fitted.probabilities>0.5, 1,0)
+
 ## Confusion matrix and statistics
-confusionMatrix(table(result, test$Survived))
+confusionMatrix(table(fitted.results, test$Survived))
 
-## ROC Curve and calculating the area under the curve(AUC)
-predictions <- predict(model, newdata=test, type="response")
-ROCRpred <- prediction(predictions, test$Survived)
-ROCRperf <- performance(ROCRpred, measure = "tpr", x.measure = "fpr")
 
-plot(ROCRperf, colorize = TRUE, text.adj = c(-0.2,1.5), print.cutoffs.at = seq(0,1,0.1))
 
-auc <- performance(ROCRpred, measure = "auc")
-auc <- auc@y.values[[1]]
-auc
 ## ---- echo=TRUE---------------------------------------------------------------------------------
 
 
