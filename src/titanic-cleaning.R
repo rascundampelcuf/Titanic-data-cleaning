@@ -152,6 +152,8 @@ boxplot.stats(titanic_data$Fare)$out
 titanic_data1<- select(titanic_data, -c(Cabin, PassengerId, Ticket, Name))
 summary(titanic_data1)
 
+
+
 #4.2 Normalitat i homogeneïtat de la variància
 #Per comporbar si segueix una distribució normal, podem tenir una aproximació amb la funció qqnorm, on veiem que hi ha força desviaciço en alguns trams, i per tant, possibles evidencies de que no segueix una distribució normal.
 #VARIABLE FARE
@@ -238,7 +240,7 @@ grid.arrange(plotbyClass,plotbyAge,plotbySex,ncol=2)
 #H1: la proporció no és major. 
 tableSurvived<-table(titanic_data1$Survived)
 prop.table(table(titanic_data1$Survived))
-binom.test(x = c(494, 815), alternative = "greater", conf.level = 0.95)
+binom.test(x = c(494, 815), alternative = "less", conf.level = 0.95)
 #Amb un nivell de confiança del 95% podem concloure que no va sobreviure més del 50% dels passatgers. 
 
 ##Hi ha diferència entre la proporció d'homes i dones que van sobreviure?
@@ -404,23 +406,42 @@ confusionMatrix(table(fitted.results, test$Survived))
 
 
 
+#Mitjançant els resultats del model podem veure com el fet de pertanyer a la clase 2 o 3 està relacionat amb el fet de sobreviure, com també el genère, on el fet de ser home té un efecte negatiu. 
+#L'edat també té un efecte negatiu en la supervivencia, és a dir, a major edat menor probailitat de sobreviure. 
+#Mitjançant l'intercept, podem veure el que hem anat confirmant amb els test d'independència i els gràfics, i és que, el fet de ser dona i viatjar a la classe 1 té una major probabilitat de supervivència. 
+#A través de la matriu de confusió podem veure com el model el model ha encertat un 83% dels casos. 
 ## ---- echo=TRUE---------------------------------------------------------------------------------
 
 
 ##5----REPRESENTACIÓ DELS RESULTATS--------------------------------------------------------------
+#Supervivents
+ggplot(titanic_data1, aes(x = Survived)) +
+  geom_bar(width=0.5, fill = "darksalmon") +
+  geom_text(stat='count', aes(label=stat(count)), vjust=-0.5) +ggtitle("Survived")
+theme_classic()
+#Relació variables i supervivència
 par(mfrow=c(2,2))
 plot(table_Class, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Class")
 plot(table_Sex, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Sex")
 plot(table_AgeD, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Age")
 plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Family Size")
-#+ gràfic correlació + regressió 
 
+#Correlació 
+corrplot(M, 
+         method = "color",
+         type = "upper",
+         addCoef.col = "white",number.cex = 0.7,
+         tl.col="black", tl.srt=35,tl.cex = 0.7,
+         cl.cex = 0.7,order = "hclust",
+         title = "matriu de correlació")
+
+#Matriu de confusió
+table(test$Survived, fitted.results)
 ## ---- echo=TRUE-------------------------------------------------------------------------------
 
 
 
 ##6----CONCLUSIÓ-------------------------------------------------------------------------------
-
 
 ##Mitjançant els gràfics de barres, les taules de contingencia i els tests realitzats podem concloure: 
 #Que els passatgers que van sobreviure és menys del 50%, concretament només representen un 37% del total. 
@@ -429,11 +450,8 @@ plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. F
 ##Cal destacar també que la proporció d'adults sols és més del 50%, i que la franja on hi trobem més viatjants és la franja d'edat entre 21 i 28 anys.
 ##Després de realitzar els 4 test d'independència, podem veure que les diferències són significatives, i que tan l'edat, la classe en la que viatjaven, el gènere com el tamany de la unitat familiar van ser rellevants per la superviència.
 #Van sobreviure més dones que homes, la classe amb majors supervivents és la Classe 1, pel que fa l'edat s'esperava més supervivents entre la franja dels 21-28 d'anys de la que es va produir, i finalment, pel que fa el tamany familiar també va tenir un paper important, on destaquen les famílies de 2-4 membres destacan com a supervivents, m'entre que pel que fa els adults que viatjeven sols s'esperava una ràtio de supervients major.
-
-
-#FALTA CONCLUSIÓ CORRELACIÓ + REGRESSIÓ
-
-
+#Mitjaçant la regressió logística, hem pogut comprovar novament, el que hem anat veient al llarg de tots els gràfics, taules i test, i és doncs, que la supervivència no va ser igual per tots els passatgers, que l'edat, els homes com les classes 2 i 3 van tenir especialment un paper negatiu, fent que la probabilitat de sobreviure fos menor. 
+#També podem extreure que el preu pagat del tiquet i la porta per la que van embarcar no va afectar en la supervivència. 
 
 ## ---- echo=TRUE-------------------------------------------------------------------------------
 #bibliografia
