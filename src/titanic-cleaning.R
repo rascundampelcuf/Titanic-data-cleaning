@@ -42,7 +42,8 @@ if(!require(corrplot)){
 }
 library(normtest)
 library(nortest)
-
+library(corrplot)
+library(Hmisc)
 ## ---- echo=TRUE----------------------------------------------------------
 
 ##----1. DESCRIPCIÓ del DATASET-------------------------------------------
@@ -80,8 +81,9 @@ colSums(titanic_data== "")
 #Tractament valors buits variable "Embarked": 
 #Ens basarem en usar una mesura de tendència central,en aquest cas al ser una variable categòrica usarem la moda 
 mlv(titanic_data$Embarked, method = "mfv") 
+
 ##El ser S la moda: prenem el valor "S" per els valors buits de la variable.
-titanic_data$Embarked[titanic_data$Embarked==""]="C"
+titanic_data$Embarked[titanic_data$Embarked==""]="S"
 
 #Tractament del valor Fare, mitjançant la mediana:
 titanic_data[!complete.cases(titanic_data$Fare),]
@@ -348,8 +350,20 @@ plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. F
 
 # Correlació:
 aux_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare")]
-M<-cor(aux_data)
-corrplot(M, type="upper")
+#A continuació podem plasmar la idea anterior gràficament, calculant prèviament la matriu de correlació i guardant-la en un objecte. 
+corrplot(M, 
+         method = "color",
+         type = "upper",
+         addCoef.col = "white",number.cex = 0.7,
+         tl.col="black", tl.srt=35,tl.cex = 0.7,
+         cl.cex = 0.7,order = "hclust",
+         title = "matriu de correlació")
+
+corrplot.mixed(M)
+#Però no podem dir si són significativament diferent de 0, és a dir, no tenim evidencies estadístiques. Per saber-ho cal dur a terme una proba de significació. Amb la següent instrucció podem veure la matriu anterior i els p-value, on en la majoria dels casos hi ha correlació, els pvalue són especialment petits. 
+rcorr(as.matrix(aux_data))
+##En tots els casos el p-value es (=0) molt petit, és a dir, que és estadísticament significatiu.
+##Destacan  les relacions de tarifes amb l'edat, on la correlació és positiva, de manera que a major edat major preu han pagat pel tiquet, i el mateix passa amb el tamany de la família i el preu. 
 
 
 # Regressió logística
@@ -379,6 +393,9 @@ summary(model)
 
 ## Using anova() to analyze the table of deviance
 anova(model, test="Chisq")
+
+
+#Model 2 probar sense les variables no significatives + predicció.
 
 ## Predicting Test Data
 result <- predict(model,newdata=test,type='response')
