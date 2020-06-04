@@ -432,7 +432,6 @@ plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. F
 
 ### Matriu de correlació
 A continuació podem plasmar la idea anterior gràficament, calculant prèviament la matriu de correlació i guardant-la en un objecte.
-
 ```{r}
 # Creació de la matriu de correlació
 corr_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare")]
@@ -457,8 +456,6 @@ Destaquen les relacions entre el preu del bitllet i l'edat, i entre el preu del 
 
 ### Regressió logística
 Volem predir el fet de sobreviure o no, de manera que ens trobem amb una variable discreta, concretament binaria (0,1). Si utilitzéssim un model lineal per predir un grup binàri estariem obtenint un model erroni.
-
-
 ```{r}
 # Divisió del conjunt de dades en dos subconjunts, un de train i l'altre de test
 train <- titanic_data[1:667,]
@@ -477,7 +474,6 @@ fitted.results <- ifelse(fitted.probabilities > 0.5, 1, 0)
 # Matriu de confusió
 confusionMatrix(table(fitted.results, test$Survived))
 ```
-
 Mitjançant els resultats del model podem veure com el fet de pertanyer a la clase 2 o 3 està relacionat amb el fet de sobreviure, com també el genère, on el fet de ser home té un efecte negatiu.
 
 L'edat també té un efecte negatiu en la supervivencia: a major edat menor probabilitat de sobreviure.
