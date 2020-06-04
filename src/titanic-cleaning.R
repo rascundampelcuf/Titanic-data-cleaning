@@ -417,10 +417,10 @@ confusionMatrix(table(fitted.results, test$Survived))
 
 ##5----REPRESENTACIÓ DELS RESULTATS--------------------------------------------------------------
 #Supervivents
-ggplot(titanic_data1, aes(x = Survived)) +
+ggplot(titanic_data, aes(x = Survived)) +
   geom_bar(width=0.5, fill = "darksalmon") +
   geom_text(stat='count', aes(label=stat(count)), vjust=-0.5) +ggtitle("Survived")
-theme_classic()
+
 #Relació variables i supervivència
 par(mfrow=c(2,2))
 plot(table_Class, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Class")
