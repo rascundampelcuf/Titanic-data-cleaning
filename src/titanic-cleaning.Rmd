@@ -213,3 +213,14 @@ titanic_data$Age <- apply(titanic_data[, c("Sex", "Age", "Pclass")], 1, AgeImput
 # Representació dels resultats
 
 # Resolució del problema
+
+# Recursos
+1. Subirats Maté, L., Pérez Trenanz, D. O., & Calvo González, M. (2019). Introducció a la neteja i anàlisi de dades. UOC.
+2. Amat Rodrigo, J. (2016). RPubs - Análisis de Normalidad: gráficos y contrastes de hipótesis. https://rpubs.com/Joaquin_AR/218465
+3. Homogeneity of variance. http://www.cookbook-r.com/Statistical_analysis/Homogeneity_of_variance/
+4. aggregate function | R Documentation. https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/aggregate
+5. Shirokanova, A., & Volchenko, O. (2019). RPubs - Chi squared. https://rpubs.com/ovolchenko/chisq2
+6. fisher.test function | R Documentation. https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/fisher.test
+7. Amat Rodrigo, J. (2016). RPubs - Test exacto de Fisher, chi-cuadrado de Pearson, McNemar y Q-Cochran. https://rpubs.com/Joaquin_AR/220579
+8. Ramos Lorenzo, C. (2019). RPubs - Logistic Regression. https://rpubs.com/MrCristianrl/500969
+
