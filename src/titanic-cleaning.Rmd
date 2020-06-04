@@ -204,7 +204,7 @@ titanic_data$Age <- apply(titanic_data[, c("Sex", "Age", "Pclass")], 1, AgeImput
 ```
 
 ## Identificació de valors extrems
-Els valors extrems o outliers són registres que destacant per ser molt distants al valor central del conjunt. Generalment es considera un outlier quan el seu valor es troba allunyat 3 desviacions estàndars respecte la mitjana, un instrument gràfic que ens permet visualitzar ràpidament aquests valors són els diagrames de caixes. Una altre forma de detectar-los a R, es mitjançant la funció boxplot.stats()
+Els valors extrems o outliers són registres que destacant per ser molt distants al valor central del conjunt. Generalment es considera un outlier quan el seu valor es troba allunyat 3 desviacions estàndars respecte la mitjana, un instrument gràfic que ens permet visualitzar ràpidament aquests valors són els diagrames de caixes. Una altre forma de detectar-los a R, es mitjançant la funció `boxplot.stats()`.
 
 ```{r}
 fare.bp<-boxplot(titanic_data$Fare, main="Fare", col="darkgreen")
@@ -213,214 +213,271 @@ boxplot.stats(titanic_data$Fare)$out
 Age.bp<-boxplot(titanic_data$Age, main="Age", col="darkgreen")
 boxplot.stats(titanic_data$Age)$out
 ```
-Si ens fixem en els valors extrems resultants, en el cas d'Age, són valors que poden donar-se perfectament, ja que podem tenir persones de 80 anys com a passatgers.
-En el cas de Fare, són valors que també es poden haver donat, ja que el preu que hagi pugut pagar cada passatger pot tenir una gran oscil.lació, i es poden donar valors de 0 a 500 perfectament.
-Es per això, que tot i haver-los detectat, hem decidit no tractar-los de manera diferent a com han estat recollits.
 
+Si ens fixem en els valors extrems resultants, en el cas d'Age, són valors que poden donar-se perfectament, ja que podem tenir persones de 80 anys com a passatgers.
+
+En el cas de Fare, són valors que també es poden haver donat, ja que el preu que hagi pogut pagar cada passatger pot tenir una gran oscil·lació, i es poden donar valors de 0 a 500 perfectament.
+
+Es per això, que tot i haver-los detectat, hem decidit no tractar-los de manera diferent a com han estat recollits.
 
 # Anàlisi de les dades
 ## Comprovació de la normalitat i homogeneïtat de la variància
-Per comprobar si les variables Age i Fare segueixen una distribució normal, podem tenir una aproximació amb la funció qqnorm, la qual comparara els quartils de la distribució observada amb els quartils teòrics d'una distribució normal, com més s'aproximen a les dades d'una normal, més alineats es trobaran els punts al voltant de la recta.
-```{r}
-#Representació de la distribució de la variable Fare mitjançant un histograma: 
-hist(x=titanic_data$Fare, main="Histograma Fare", xlab="Fare", ylab="Frecuencia", col = "darkgreen", ylim=c(0,1200), xlim = c(0,600))
-qqnorm(titanic_data$Fare) 
-qqline(titanic_data$Fare, col="red")
-ggplot(titanic_data,aes(Fare)) + geom_density(size=1, alpha= 0.6)+ ylab("DENSITAT")
-```
-Mitjançant els gràfics anteriors, podem veure que hi ha força desviaciço en alguns trams, i per tant, possibles evidències de que no segueix una distribució normal. Ho contrasterem mitjançant el Test Lilliefors (asumeix mediana i variança poblacionals desconegudes)
-  *Hipòtesis nul.la: les dades procedeixen d'una distribució normal
-  *Hipòtesis alterantiva: no procedeixen d'una distribució normal. 
+Per comprovar si les variables *Age* i *Fare* segueixen una distribució normal utilitzem la funció `qqnorm` per tenir una aproximació. Aquesta funció comparara els quartils de la distribució observada amb els quartils teòrics d'una distribució normal. Com més s'aproximen a les dades d'una normal, més alineats es trobaran els punts al voltant de la recta.
 
 ```{r}
-#TEST Lilliefors
-lillie.test(x=titanic_data$Fare)
+# Representació de la distribució de la variable 'Fare' mitjançant un histograma
+hist(x = titanic_data$Fare, main = "Histograma Fare",
+     xlab = "Fare", ylab = "Freqüència", col = "darkgreen",
+     ylim = c(0,1200), xlim = c(0,600))
+
+qqnorm(titanic_data$Fare) 
+qqline(titanic_data$Fare, col = "red")
+ggplot(titanic_data, aes(Fare)) + geom_density(size = 1, alpha = 0.6) + ylab("Densitat")
 ```
-Rebutjem la hipòtesis nul.la, la diferència és estadísticament significativa, és a dir, amb un 95% de confiança podem dir que la variable Fare no segueix una distribució normal.
-Si repetim el mateix procediment per la variable Age: 
+
+Mitjançant els gràfics anteriors, podem veure que hi ha força desviació en alguns trams, i per tant, possibles evidències de que no segueix una distribució normal. Ho contrasterem mitjançant el Test *Lilliefors* (asumeix mediana i variança poblacionals desconegudes).
+
+* Hipòtesis nul.la: les dades procedeixen d'una distribució normal.
+* Hipòtesis alterantiva: no procedeixen d'una distribució normal.
+
 ```{r}
-#Representació de la distribució de la variable Fare mitjançant un histograma: 
-hist(x=titanic_data$Age, main="Histograma Age", xlab="Age", ylab="Frecuencia", col = "darksalmon", ylim=c(0,350), xlim = c(0,100))
+# Test Lilliefors
+lillie.test(x = titanic_data$Fare)
+```
+
+Rebutjem la hipòtesis nul·la perquè la diferència és estadísticament significativa, és a dir, amb un 95% de confiança podem dir que la variable *Fare* no segueix una distribució normal.
+
+Repetim el mateix procediment per la variable *Age*:
+
+```{r}
+# Representació de la distribució de la variable 'Age' mitjançant un histograma
+hist(x = titanic_data$Age, main = "Histograma Age",
+     xlab = "Age", ylab = "Freqüència", col = "darksalmon",
+     ylim = c(0,350), xlim = c(0,100))
 
 qqnorm(titanic_data$Age) 
-qqline(titanic_data$Age, col="red")
-ggplot(titanic_data,aes(Age)) + geom_density(size=1, alpha= 0.6)+ ylab("DENSITAT")
+qqline(titanic_data$Age, col = "red")
+ggplot(titanic_data, aes(Age)) + geom_density(size = 1, alpha = 0.6) + ylab("Densitat")
 
-lillie.test(x=titanic_data$Age)
+lillie.test(x = titanic_data$Age)
 ```
-Podem veure novament, com la variable edat per un nivell de confiança del 95% rebutjem la hipòtesis nul.la, i per tant, no podem acceptar que la variable segueixi una distribució normal.
+
+Podem veure de nou amb la variable *Age* com la diferència és estadísticament significativa. Per tant, rebutgem la hipòtesis nul·la i afirmem, amb un 95% de confiança, que la variable *Age* no segueix una distribució normal.
 
 ```{r}
 pairs(titanic_data[, c(4,7)])
 ```
 
-#Comprovació de la HOMOGENEITAT DE LA VARIANCIA 
-Finalment comprovarem l'homoscedasticitat de les dades, és a dir, la igualtat de variàncies per Fare i Age.
-Ja que no tenim seguretat que provinguin d'una població normal, hem utilitzat el test de Levene amb la mediana com a mesura de centralitat, juntament amb el test no paramètric  Fligner-Killeen que també es basa en la mediana. 
-  *Hipòtesis nul.la: la variança és constant.
-  *Hipòtesis alterantiva: la variança no és constant. 
+Finalment comprovarem l'homoscedasticitat de les dades, és a dir, la igualtat de variàncies per *Fare* i *Age*.
+
+Al no tenir seguretat que provinguin d'una població normal hem utilitzat el test de *Levene* amb la mediana com a mesura de centralitat, juntament amb el test no paramètric *Fligner-Killeen* que també es basa en la mediana.
+
+* Hipòtesis nul·la: la variança és constant.
+* Hipòtesis alterantiva: la variança no és constant.
 
 ```{r}
 aggregate(Fare~Survived, data = titanic_data, FUN = var)
 aggregate(Age~Survived, data = titanic_data, FUN = var)
 
-#Levene TEST
+# Test Levene
 levene <- filter(.data = titanic_data, Survived %in% c("0", "1"))
 leveneTest(y = levene$Fare, group = levene$Survived, center = "median")
 leveneTest(y = levene$Age, group = levene$Survived, center = "median")
 
-#Test Fligner-Killeen
-fligner.test(Fare ~ Survived, data=titanic_data)
-fligner.test(Age ~ Survived, data=titanic_data)
-
+# Test Fligner-Killeen
+fligner.test(Fare ~ Survived, data = titanic_data)
+fligner.test(Age ~ Survived, data = titanic_data)
 ```
-En els dos tests realitzats, podem veure com tan la variable Fare com Age, es rebutja la hipòtesis nula, és a dir, amb un nivell de confiança del 95%, podem concloure que en ambdos grups la variança no és constant. 
 
+En els dos tests realitzats es pot observar que tant per la variable *Fare* com per la variable *Age* es rebutja la hipòtesis nul·la. Amb un nivell de confiança del 95% podem concloure que en ambdós grups la variança no és constant.
 
 ## Aplicació de proves estadístiques
 ### Contrast d'hipòtesis
-Ens interessa descriure la relació entre la supervivència i les variables edat, classe i gènere. 
-Per a això, en primer lloc hem dut a terme un gràfic mitjançant diagrames de barres amb la quantitat de morts i supervivents segons la classe en la que viatjaven, l'edat o el gènere.
+Ens interessa descriure la relació entre la supervivència i les variables *Age*, *Pclass* i *Sex*.
+
+En primer lloc hem dut a terme un gràfic mitjançant diagrames de barres amb la quantitat de morts i supervivents segons la classe en la que viatjaven, l'edat o el gènere.
+
 ```{r}
-plotbyClass<-ggplot(titanic_data,aes(Pclass,fill=Survived))+geom_bar() +labs(x="Class", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("darksalmon","darkseagreen4"))+ggtitle("Survived by Class")
-plotbyAge<-ggplot(titanic_data,aes(Age,fill=Survived))+geom_bar() +labs(x="Age", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("darksalmon","darkseagreen4"))+ggtitle("Survived by Age")
-plotbySex<-ggplot(titanic_data,aes(Sex,fill=Survived))+geom_bar() +labs(x="Sex", y="Passengers")+ guides(fill=guide_legend(title=""))+ scale_fill_manual(values=c("darksalmon","darkseagreen4"))+ggtitle("Survived by Sex")
-grid.arrange(plotbyClass,plotbyAge,plotbySex,ncol=2)
+plotByClass <- ggplot(titanic_data, aes(Pclass, fill = Survived)) + geom_bar() + 
+  labs(x = "Class", y = "Passengers") + guides(fill = guide_legend(title = "")) +
+  scale_fill_manual(values = c("darksalmon", "darkseagreen4")) + ggtitle("Survived by Class")
+
+plotByAge <- ggplot(titanic_data, aes(Age, fill = Survived)) + geom_bar() +
+  labs(x = "Age", y = "Passengers") + guides(fill = guide_legend(title = "")) +
+  scale_fill_manual(values = c("darksalmon", "darkseagreen4")) + ggtitle("Survived by Age")
+
+plotBySex <- ggplot(titanic_data, aes(Sex, fill = Survived)) + geom_bar() +
+  labs(x = "Sex", y = "Passengers") + guides(fill = guide_legend(title = "")) +
+  scale_fill_manual(values = c("darksalmon", "darkseagreen4")) + ggtitle("Survived by Sex")
+
+grid.arrange(plotByClass, plotByAge, plotBySex, ncol = 2)
 ```
-CRITERIS D'ÈXIT:
+
+**Criteris d'èxit**
+
 1. Van sobreviure més del 50% dels passatgers? Existeix diferència significativa per un nivell de significació del 5%?
-Per poder contrastar la hipòtesis, utilitzarem el test binominal exacte. 
-H0: la proporció és major del 50%. 
-H1: la proporció no és major. 
+
+Per poder contrastar la hipòtesis, utilitzarem el test binominal exacte.
+
+* H0: la proporció és major del 50%. 
+* H1: la proporció no és major.
+
 ```{r}
-tableSurvived<-table(titanic_data$Survived)
+tableSurvived <- table(titanic_data$Survived)
 prop.table(table(titanic_data$Survived))
 binom.test(x = c(494, 815), alternative = "less", conf.level = 0.95)
 ```
+
 Amb un nivell de confiança del 95% podem concloure que no va sobreviure més del 50% dels passatgers. 
 
 2. Hi ha diferència significativa entre la proporció d'homes i dones que van sobreviure?
-H0: les dues variables són independents. 
-H1: les dues variables no són independents. 
-Per esbrinar si hi ha diferència, hem executat el test de fisher, el qual ens permet estudiar si existeix asociació entre dues variables qualitatives.
+
+* H0: les dues variables són independents. 
+* H1: les dues variables no són independents. 
+
+Per esbrinar si hi ha diferència hem executat el test de *Fisher*, el qual ens permet estudiar si existeix asociació entre dues variables qualitatives.
+
 ```{r}
-table_Sex<-table(titanic_data$Sex, titanic_data$Survived)
-prop.table(table(titanic_data$Sex, titanic_data$Survived), margin=1)
+table_Sex <- table(titanic_data$Sex, titanic_data$Survived)
+prop.table(table(titanic_data$Sex, titanic_data$Survived), margin = 1)
 fisher.test(table_Sex, alternative = "two.sided")
 
-#Si fem el test X^2 també és significatiu.
+# Si fem el test X² també és significatiu
 chisq.test(x = table_Sex)
 chisq.test(x = table_Sex)$residuals
 ```
-Amb un 95% de confiança podem rebutjar el test, i per tant, afirmar que les dues variables estàn relacionades. Concretament, s'esperava un 11.7% més d'homes que sobrevisques i un -15.8% de dones.
+
+Amb un 95% de confiança podem rebutjar el test i, per tant, afirmar que les dues variables estan relacionades. Concretament s'esperava un 11.7% més d'homes que sobrevisques i un 15.8% menys de dones.
 
 3. Hi ha diferències en la supervivencia segons la classe en la que viatjaven?
-H0: les dues variables són independents. 
-H1: les dues variables no són independents. 
+
+* H0: les dues variables són independents. 
+* H1: les dues variables no són independents. 
+
 ```{r}
-table_Class<-table(titanic_data$Pclass, titanic_data$Survived)
-prop.table(table(titanic_data$Pclass, titanic_data$Survived), margin=1)
+table_Class <- table(titanic_data$Pclass, titanic_data$Survived)
+prop.table(table(titanic_data$Pclass, titanic_data$Survived), margin = 1)
 fisher.test(table_Class, alternative = "two.sided")
-#Si fem el test X^2 també és significatiu.
+
+# Si fem el test X² també és significatiu
 chisq.test(x = table_Class)
 chisq.test(x = table_Class)$residuals
 ```
-Podem afirmar novament amb un 95% de confiança que hi ha relació entre ambdues variables, on s'esperava un 4.7% més de supervivents de la classe 3, en canvi de la classe 1 s'esperava un 5.8% menys. 
 
+Podem afirmar de nou amb un 95% de confiança que hi ha relació entre ambdues variables, on s'esperava un 4.7% més de supervivents de la classe 3, en canvi de la classe 1 s'esperava un 5.8% menys. 
 
-A continuació discretitzarem la variable edat. El nombre d'intervals escollits=3, utilitzarem el mètode d'igual freqüència per tal de mantenir sempre la mateixa freqüència. 
+A continuació es discretitzarà la variable *Age*. El nombre d'intervals escollits és 3 i s'utilitzarà el mètode d'igual freqüència per tal de mantenir sempre la mateixa freqüència.
+
 ```{r}
-dis1<-table(discretize(x=titanic_data$Age, method = "frequency", breaks =4, include.lowest = TRUE))
+dis1 <- table(discretize(x = titanic_data$Age, method = "frequency", breaks = 4, include.lowest = TRUE))
 dis1
-titanic_data$AgeD[titanic_data$Age <21] <- "Menors de 21 anys"
+titanic_data$AgeD[titanic_data$Age < 21] <- "Menors de 21 anys"
 titanic_data$AgeD[titanic_data$Age >= 21 & titanic_data$Age < 28] <- "Entre 21 i 28 anys"
 titanic_data$AgeD[titanic_data$Age >= 28 & titanic_data$Age < 39] <- "Entre 28 i 39 anys"
-titanic_data$AgeD[titanic_data$Age>= 39] <- "Majors de 39"
+titanic_data$AgeD[titanic_data$Age >= 39] <- "Majors de 39"
 ```
 
-Tot seguit fem de la nova variable un factor
+Tot seguit fem de la nova variable un factor.
+
 ```{r}
-titanic_data$AgeD <-
-  factor(
-    titanic_data$AgeD,
-    ordered = FALSE,
-    levels = c(
-      "Menors de 21 anys",
-      "Entre 21 i 28 anys",
-      "Entre 28 i 39 anys",
-      "Majors de 39"
-    )
+titanic_data$AgeD <- factor(
+  titanic_data$AgeD,
+  ordered = FALSE,
+  levels = c(
+    "Menors de 21 anys",
+    "Entre 21 i 28 anys",
+    "Entre 28 i 39 anys",
+    "Majors de 39"
   )
+)
 summary(titanic_data$AgeD)
 ```
 
 4. Hi ha diferències en la supervivència segons l'edat?
-H0: les dues variables són independents. 
-H1: les dues variables no són independents. 
+
+* H0: les dues variables són independents.
+* H1: les dues variables no són independents.
+
 ```{r}
-table_AgeD<-table(titanic_data$AgeD, titanic_data$Survived)
-prop.table(table(titanic_data$AgeD, titanic_data$Survived), margin=1)
+table_AgeD <- table(titanic_data$AgeD, titanic_data$Survived)
+prop.table(table(titanic_data$AgeD, titanic_data$Survived), margin = 1)
 
 fisher.test(table_AgeD, alternative = "two.sided")
-#Si fem el test X^2 també és significatiu.
+
+# Si fem el test X² també és significatiu
 chisq.test(x = table_AgeD)
 chisq.test(x = table_AgeD)$residuals
 chisq.test(x = table_AgeD)$stdres
 ```
-Podem afirmar novament amb un 95% de confiança que hi ha relació entre ambdues variables.S'esperava un 2,3% més de supervivents en la franja d'edat 21-28 anys, en canvi, s'esperava un 2% menys en la de menors de 21.
+
+Podem afirmar de nou amb un 95% de confiança que hi ha relació entre ambdues variables. S'esperava un 2,3% més de supervivents en la franja d'edat 21-28 anys, en canvi s'esperava un 2% menys en la de menors de 21.
 
 Finalment, ens interessava conèixer si la probabilitat de sobreviure tenia alguna relació amb el tamany de la família?
-En primer lloc, el que hem fet es crear una nova variable, anomenada FamilySize, que és la suma de SibSp i Parch. On a més a més, hem analitzat, si tenía valors extrems, seguia una distribució normal i si la variança era constant entre els diferents grups.
+
+En primer lloc, el que hem fet es crear una nova variable anomenada *FamilySize*, que és la suma de *SibSp* i *Parch*. Hem analitzat si tenia valors extrems, si seguia una distribució normal i si la variança era constant entre els diferents grups.
+
 ```{r}
-#Creació nova variable: 
-titanic_data$FamilySize <- titanic_data$SibSp + titanic_data$Parch +1;
+# Creació nova variable
+titanic_data$FamilySize <- titanic_data$SibSp + titanic_data$Parch + 1;
 hist(titanic_data$FamilySize)
 boxplot.stats(titanic_data$FamilySize)$out
-fligner.test(Age ~ Survived, data=titanic_data)
-lillie.test(x=titanic_data$FamilySize)
+fligner.test(Age ~ Survived, data = titanic_data)
+lillie.test(x = titanic_data$FamilySize)
 ```
-Podem veure, que les famílies més grans comptant, pares, fills, germans i parelles és de 11, número que hem donat per vàlid. Mitjançant els diferents test, veiem però que no segueix una distribució normal, com tampoc presenta una variança constant. 
-El que farem a continuació serà discretitzar la variable en 3 grups:
+
+Podem veure que les famílies més grans, comptant pares, fills, germans i parelles, és de 11, número que s'ha donat per vàlid.
+
+Mitjançant els diferents test es pot veure que no segueix una distribució normal i que no presenta una variança constant. 
+
+El que es farà a continuació serà discretitzar la variable en 3 grups.
+
 ```{r}
 summary(titanic_data$FamilySize)
-#Farem serà discretitzar també la variable Família Size. 
-titanic_data$FamilySizeD[titanic_data$FamilySize <2] <- "Adult sol"
+
+# Discretitzem la variable 'FamíliaSize' 
+titanic_data$FamilySizeD[titanic_data$FamilySize < 2] <- "Adult sol"
 titanic_data$FamilySizeD[titanic_data$FamilySize >= 2 & titanic_data$FamilySize < 5] <- "Famílies de dos a 4 membres"
-titanic_data$FamilySizeD[titanic_data$FamilySize>=5] <- "Famílies amb més de 4 membres"
+titanic_data$FamilySizeD[titanic_data$FamilySize >= 5] <- "Famílies amb més de 4 membres"
 ```
-Tot seguit fem de la nova variable un factor
+
+Tot seguit fem de la nova variable un factor.
+
 ```{r}
-titanic_data$FamilySizeD<-
-  factor(
-    titanic_data$FamilySizeD,
-    ordered = FALSE,
-    levels = c(
-      "Adult sol",
-      "Famílies de dos a 4 membres",
-      "Famílies amb més de 4 membres"
-    )
+titanic_data$FamilySizeD <- factor(
+  titanic_data$FamilySizeD,
+  ordered = FALSE,
+  levels = c(
+    "Adult sol",
+    "Famílies de dos a 4 membres",
+    "Famílies amb més de 4 membres"
   )
+)
 
 summary(titanic_data$FamilySizeD)
 ```
-*H0:Les variables són independents, és a dir, el fet de sobreviure no varia segons el tamany de la unitat familiar. 
-*H1: Les variables són dependents.
+
+* H0:Les variables són independents, és a dir, el fet de sobreviure no varia segons el tamany de la unitat familiar. 
+* H1: Les variables són dependents.
+
 ```{r}
-table_Family<-table(titanic_data$FamilySizeD, titanic_data$Survived)
-prop.table(table(titanic_data$FamilySizeD, titanic_data$Survived), margin=1)
+table_Family <- table(titanic_data$FamilySizeD, titanic_data$Survived)
+prop.table(table(titanic_data$FamilySizeD, titanic_data$Survived), margin = 1)
 fisher.test(table_Family, alternative = "two.sided")
-#Si fem el test X^2 també és significatiu.
+
+# Si fem el test X² també és significatiu
 chisq.test(x = table_Family)
 chisq.test(x = table_Family)$residuals
 chisq.test(x = table_Family)$stdres
 ```
-Podem veure amb un nivell de significació del 5%, com el tamany de la unita familiar també va influir, van sobreviure un 9.7% més de famílies de 2-4 membres del que s'esperava, per contra, s'esperava que un 7.8% més d'adults sols sobrevisques.
 
-Mitjançant els gràfics de barres, les taules de contingencia i els tests realitzats podem concloure: 
-**La proporció d'homes i dones que van sobreviure és força diferent, homes: 109, dones: 385, si ens fixem en el % respecte el seu gènere, en les dones és del 83% mentre que pels homes és del 23%.
-**Referent a la classe en la que viatjaven, si ens fixem en el gràfic, el nombre de personas que més van sobreviure són els que viatjaven en 3 classe, cal dir, però, que el nombre de passatgers d'aquesta classe és molt major. Si ens fixem en el % dins de cada classe, són els de primera classe els que tenen una ràtio més alta de supervivència.
-**Cal destacar també que la proporció d'adults sols és més del 50%, i que la franja on hi trobem més viatjants és la franja d'edat entre 21 i 28 anys.
-**Després de realitzar els 4 test, podem veure que les diferències són significatives, i que tan l'edat, la classe en la que viatjaven, el gènere com el tamany de la unitat familiar van ser significatius per la superviència.
+Es pot veure amb un nivell de significació del 5% com el tamany de la unitat familiar també va influir. Van sobreviure un 9.7% més de famílies de 2-4 membres del que s'esperava. En canvi, s'esperava que un 7.8% més d'adults sols sobrevisqués.
+
+Mitjançant els gràfics de barres, les taules de contingencia i els tests realitzats podem concloure:
+
+* La proporció d'homes i dones que van sobreviure és força diferent(homes: 109, dones: 385). Si ens fixem en el % respecte el seu gènere, per les dones és del 83% mentre que pels homes és del 23%.
+* Referent a la classe en la que viatjaven, si ens fixem en el gràfic, el nombre de persones que més van sobreviure són els que viatjaven en 3a classe. Cal dir que el nombre de passatgers d'aquesta classe és molt major. Si ens fixem en el % dins de cada classe, són els de 1a classe els que tenen una ràtio més alta de supervivència.
+* Cal destacar també que la proporció d'adults és més del 50%, i que la franja on hi trobem més viatjants és la franja d'edat entre 21 i 28 anys.
+* Després de realitzar els 4 tests es pot observar que les diferències són significatives, i que tant l'edat, la classe en la que viatjaven, el gènere com el tamany de la unitat familiar van ser significatius per la superviència.
 
 ```{r}
 par(mfrow=c(2,2))
@@ -432,6 +489,7 @@ plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. F
 
 ### Matriu de correlació
 A continuació podem plasmar la idea anterior gràficament, calculant prèviament la matriu de correlació i guardant-la en un objecte.
+
 ```{r}
 # Creació de la matriu de correlació
 corr_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare")]
@@ -439,7 +497,7 @@ M <- cor(corr_data)
 par(mfrow = c(1,2))
 corrplot(M, method = "color", type = "upper",
          addCoef.col = "white", number.cex = 0.7,
-         tl.col="black", tl.srt=35, tl.cex = 0.7,
+         tl.col="black", tl.srt = 35, tl.cex = 0.7,
          order = "hclust")
 corrplot.mixed(M)
 ```
@@ -456,6 +514,7 @@ Destaquen les relacions entre el preu del bitllet i l'edat, i entre el preu del 
 
 ### Regressió logística
 Volem predir el fet de sobreviure o no, de manera que ens trobem amb una variable discreta, concretament binaria (0,1). Si utilitzéssim un model lineal per predir un grup binàri estariem obtenint un model erroni.
+
 ```{r}
 # Divisió del conjunt de dades en dos subconjunts, un de train i l'altre de test
 train <- titanic_data[1:667,]
@@ -474,6 +533,7 @@ fitted.results <- ifelse(fitted.probabilities > 0.5, 1, 0)
 # Matriu de confusió
 confusionMatrix(table(fitted.results, test$Survived))
 ```
+
 Mitjançant els resultats del model podem veure com el fet de pertanyer a la clase 2 o 3 està relacionat amb el fet de sobreviure, com també el genère, on el fet de ser home té un efecte negatiu.
 
 L'edat també té un efecte negatiu en la supervivencia: a major edat menor probabilitat de sobreviure.
@@ -490,11 +550,11 @@ ggplot(titanic_data, aes(x = Survived)) +
   geom_text(stat = 'count', aes(label = stat(count)), vjust = -0.5) + ggtitle("Survived")
 
 #Relació variables i supervivència
-#par(mfrow = c(2,2))
-#plot(table_Class, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Class")
-#plot(table_Sex, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Sex")
-#plot(table_AgeD, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Age")
-#plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Family Size")
+par(mfrow = c(2,2))
+plot(table_Class, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Class")
+plot(table_Sex, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Sex")
+plot(table_AgeD, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Age")
+plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Family Size")
 
 #Correlació 
 corrplot(M, method = "color", type = "upper",
@@ -505,7 +565,6 @@ corrplot(M, method = "color", type = "upper",
 #Matriu de confusió
 table(test$Survived, fitted.results)
 ```
-
 
 # Resolució del problema
 
