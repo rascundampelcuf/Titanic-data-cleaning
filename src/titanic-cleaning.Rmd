@@ -17,6 +17,7 @@ library(dplyr)
 library(modeest)
 library(normtest)
 library(nortest)
+library(car)
 if(!require(ggplot2)){
   install.packages('ggplot2', repos='http://cran.us.r-project.org')
   library(ggplot2)
@@ -29,7 +30,6 @@ if(!require(gridExtra)){
   install.packages('gridExtra', repos='http://cran.us.r-project.org')
   library(gridExtra)
 }
-library(car)
 if(!require(dummies)){
   install.packages("dummies")
   library(dummies)
@@ -53,6 +53,10 @@ if(!require(arules)){
 if(!require(corrplot)){
   install.packages("corrplot")
   library(corrplot)
+}
+if(!require(Hmisc)){
+  install.packages("Hmisc")
+  library(Hmisc)
 }
 ```
 
@@ -172,6 +176,7 @@ boxplot(male_people$Age~male_people$Pclass, main = "Pclass by age (male)",
 Per tractar els valors perduts tindrem en compte la informació observada a la gràfica anterior. Per realitzar aquesta tasca s'ha creat una funció `AgeMean` per obtenir la mitjana d'edats de les dones i dels homes segons la classe, i després s'ha creat una altra funció assignar als passatgers que tenen l'edat en blanc la mitjana corresponent al seu gènere i a la classe en la que viatjava.
 
 ```{r}
+# Funció per obtenir el camp 'Mean' del resultat de la funció 'summary'
 AgeMean <- function(age) {
   round(summary(age)['Mean'])
 }
@@ -179,6 +184,7 @@ AgeMean <- function(age) {
 female_mean_ages = tapply(female_people$Age, female_people$Pclass, AgeMean)
 male_mean_ages = tapply(male_people$Age, male_people$Pclass, AgeMean)
 
+# Funció per obtenir un valor de mitjana d'edat segons els camps 'Sex' i 'Pclass'
 AgeImpute <- function(row) {
   sex <- row['Sex']
   age <- row['Age']
@@ -425,9 +431,73 @@ plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. F
 ```
 
 ### Matriu de correlació
+A continuació podem plasmar la idea anterior gràficament, calculant prèviament la matriu de correlació i guardant-la en un objecte.
+
+```{r}
+# Creació de la matriu de correlació
+corr_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare")]
+M <- cor(corr_data)
+par(mfrow = c(1,2))
+corrplot(M, method = "color", type = "upper",
+         addCoef.col = "white", number.cex = 0.7,
+         tl.col="black", tl.srt=35, tl.cex = 0.7,
+         order = "hclust")
+corrplot.mixed(M)
+```
+
+Però no podem dir si són significativament diferent de 0, és a dir, no tenim evidencies estadístiques. Per saber-ho cal dur a terme una prova de significació. Amb la següent instrucció podem veure la matriu anterior i els p-value, on en la majoria dels casos hi ha correlació, els p-value són especialment petits. 
+
+```{r}
+rcorr(as.matrix(corr_data))
+```
+
+En tots els casos el p-value es (=0) molt petit, és a dir, que és estadísticament significatiu.
+Destaquen les relacions entre el preu del bitllet i l'edat, i entre el preu del bitllet i la mida de la família. En aquestes relacions la correlació és positiva, de manera que a major edat major ha sigut el preu del bitllet, i el mateix passa amb la mida de la família i el preu del bitllet. 
+
 
 ### Regressió logística
+Volem predir el fet de sobreviure o no, de manera que ens trobem amb una variable discreta, concretament binaria (0,1). Si utilitzéssim un model lineal per predir un grup binàri estariem obtenint un model erroni.
+
+
+```{r}
+# Divisió del conjunt de dades en dos subconjunts, un de train i l'altre de test
+train <- titanic_data[1:667,]
+test <- titanic_data[668:889,]
+
+# Creació del model de predicció
+model <- glm(Survived ~., family = binomial(link = 'logit'), data = train)
+summary(model)
+
+# Predicció de les dades
+result <- predict(model, newdata = test, type = 'response')
+result <- ifelse(result > 0.5,1,0)
+fitted.probabilities <- predict(model, newdata = test, type = 'response')
+fitted.results <- ifelse(fitted.probabilities > 0.5, 1, 0)
+
+# Matriu de confusió
+confusionMatrix(table(fitted.results, test$Survived))
+```
+
+Mitjançant els resultats del model podem veure com el fet de pertanyer a la clase 2 o 3 està relacionat amb el fet de sobreviure, com també el genère, on el fet de ser home té un efecte negatiu.
+
+L'edat també té un efecte negatiu en la supervivencia: a major edat menor probabilitat de sobreviure.
+
+Mitjançant l'intercept, podem veure el que hem anat confirmant amb els test d'independència i els gràfics, i és que el fet de ser dona i viatjar a la classe 1 té una major probabilitat de supervivència.
+
+A través de la matriu de confusió es pot veure com el model té un 82% de precisió en la predicció.
+
 
 # Representació dels resultats
 
 # Resolució del problema
+
+# Recursos
+1. Subirats Maté, L., Pérez Trenanz, D. O., & Calvo González, M. (2019). Introducció a la neteja i anàlisi de dades. UOC.
+2. Amat Rodrigo, J. (2016). RPubs - Análisis de Normalidad: gráficos y contrastes de hipótesis. https://rpubs.com/Joaquin_AR/218465
+3. Homogeneity of variance. http://www.cookbook-r.com/Statistical_analysis/Homogeneity_of_variance/
+4. aggregate function | R Documentation. https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/aggregate
+5. Shirokanova, A., & Volchenko, O. (2019). RPubs - Chi squared. https://rpubs.com/ovolchenko/chisq2
+6. fisher.test function | R Documentation. https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/fisher.test
+7. Amat Rodrigo, J. (2016). RPubs - Test exacto de Fisher, chi-cuadrado de Pearson, McNemar y Q-Cochran. https://rpubs.com/Joaquin_AR/220579
+8. Ramos Lorenzo, C. (2019). RPubs - Logistic Regression. https://rpubs.com/MrCristianrl/500969
+
