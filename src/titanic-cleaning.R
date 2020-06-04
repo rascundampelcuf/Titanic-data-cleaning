@@ -461,3 +461,5 @@ table(test$Survived, fitted.results)
 #https://rpubs.com/ovolchenko/chisq2
 #https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/fisher.test
 #https://rpubs.com/Joaquin_AR/220579
+#https://rpubs.com/MrCristianrl/500969
+
