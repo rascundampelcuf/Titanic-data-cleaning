@@ -17,6 +17,7 @@ library(dplyr)
 library(modeest)
 library(normtest)
 library(nortest)
+library(car)
 if(!require(ggplot2)){
   install.packages('ggplot2', repos='http://cran.us.r-project.org')
   library(ggplot2)
@@ -29,7 +30,6 @@ if(!require(gridExtra)){
   install.packages('gridExtra', repos='http://cran.us.r-project.org')
   library(gridExtra)
 }
-library(car)
 if(!require(dummies)){
   install.packages("dummies")
   library(dummies)
@@ -53,6 +53,10 @@ if(!require(arules)){
 if(!require(corrplot)){
   install.packages("corrplot")
   library(corrplot)
+}
+if(!require(Hmisc)){
+  install.packages("Hmisc")
+  library(Hmisc)
 }
 ```
 
@@ -207,8 +211,34 @@ titanic_data$Age <- apply(titanic_data[, c("Sex", "Age", "Pclass")], 1, AgeImput
 ### Contrast d'hipòtesis
 
 ### Matriu de correlació
+A continuació podem plasmar la idea anterior gràficament, calculant prèviament la matriu de correlació i guardant-la en un objecte. 
+
+```{r}
+corr_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare")]
+M<-cor(corr_data)
+par(mfrow=c(1,2))
+corrplot(M, 
+         method = "color",
+         type = "upper",
+         addCoef.col = "white",number.cex = 0.7,
+         tl.col="black", tl.srt=35,tl.cex = 0.7,
+         order = "hclust")
+corrplot.mixed(M)
+```
+
+Però no podem dir si són significativament diferent de 0, és a dir, no tenim evidencies estadístiques. Per saber-ho cal dur a terme una prova de significació. Amb la següent instrucció podem veure la matriu anterior i els p-value, on en la majoria dels casos hi ha correlació, els p-value són especialment petits. 
+
+```{r}
+rcorr(as.matrix(corr_data))
+```
+
+En tots els casos el p-value es (=0) molt petit, és a dir, que és estadísticament significatiu.
+Destaquen les relacions entre el preu del bitllet i l'edat, i entre el preu del bitllet i la mida de la família. En aquestes relacions la correlació és positiva, de manera que a major edat major ha sigut el preu del bitllet, i el mateix passa amb la mida de la família i el preu del bitllet. 
+
 
 ### Regressió logística
+
+
 
 # Representació dels resultats
 
