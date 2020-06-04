@@ -482,8 +482,30 @@ Mitjançant l'intercept, podem veure el que hem anat confirmant amb els test d'i
 
 A través de la matriu de confusió es pot veure com el model té un 82% de precisió en la predicció.
 
-
 # Representació dels resultats
+```{r}
+#Supervivents
+ggplot(titanic_data, aes(x = Survived)) +
+  geom_bar(width = 0.5, fill = "darksalmon") +
+  geom_text(stat = 'count', aes(label = stat(count)), vjust = -0.5) + ggtitle("Survived")
+
+#Relació variables i supervivència
+#par(mfrow = c(2,2))
+#plot(table_Class, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Class")
+#plot(table_Sex, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Sex")
+#plot(table_AgeD, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Age")
+#plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Family Size")
+
+#Correlació 
+corrplot(M, method = "color", type = "upper",
+         addCoef.col = "white", number.cex = 0.7,
+         tl.col="black", tl.srt = 35, tl.cex = 0.7,
+         order = "hclust")
+
+#Matriu de confusió
+table(test$Survived, fitted.results)
+```
+
 
 # Resolució del problema
 
