@@ -1,6 +1,5 @@
 ## ----load_libraries, include=FALSE---------------------------------------
 library(knitr)
-library(ggplot2)
 library(dplyr)
 library(modeest)
 if(!require(ggplot2)){
@@ -40,11 +39,13 @@ if(!require(corrplot)){
   install.packages("corrplot")
   library(corrplot)
 }
+if(!require(Hmisc)){
+  install.packages("Hmisc")
+  library(Hmisc)
+}
 library(normtest)
 library(nortest)
-library(corrplot)
-library(Hmisc)
-library(caret)
+require(graphics)
 ## ---- echo=TRUE----------------------------------------------------------
 
 ##----1. DESCRIPCIÓ del DATASET-------------------------------------------
@@ -100,7 +101,7 @@ male_people = titanic_data[titanic_data$Sex=="female",]
 boxplot(female_people$Age~female_people$Pclass, main="Pclass by age (female)", xlab="Pclass", ylab="Age")
 boxplot(male_people$Age~male_people$Pclass, main="Pclass by age (male)", xlab="Pclass", ylab="Age")
 
-age_mean <- function(age) {
+AgeMean <- function(age) {
   round(summary(age)['Mean'])
 }
 
@@ -360,6 +361,7 @@ plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. F
 # Correlació:
 aux_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare")]
 #A continuació podem plasmar la idea anterior gràficament, calculant prèviament la matriu de correlació i guardant-la en un objecte. 
+M<-cor(aux_data)
 corrplot(M, 
          method = "color",
          type = "upper",
