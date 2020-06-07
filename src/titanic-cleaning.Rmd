@@ -412,7 +412,7 @@ chisq.test(x = table_AgeD)$residuals
 chisq.test(x = table_AgeD)$stdres
 ```
 
-Podem afirmar de nou amb un 95% de confiança que hi ha relació entre ambdues variables. S'esperava un 4,3% més de supervivents en la franja d'edat 22-25 anys, en canvi s'esperava un 1,2% menys en la de menors de 22.
+Podem afirmar de nou amb un 95% de confiança que hi ha relació entre ambdues variables. S'esperava un 4,3% més de supervivents en la franja d'edat 22-25 anys, en canvi s'esperava un 2.6% menys en la de 26-37 anys.
 
 Finalment, ens interessava conèixer si la probabilitat de sobreviure tenia alguna relació amb el tamany de la família?
 
@@ -469,10 +469,9 @@ fisher.test(table_Family, alternative = "two.sided")
 # Si fem el test X² també és significatiu
 chisq.test(x = table_Family)
 chisq.test(x = table_Family)$residuals
-chisq.test(x = table_Family)$stdres
 ```
 
-Es pot veure amb un nivell de significació del 5% com el tamany de la unitat familiar també va influir. Van sobreviure un 9.7% més de famílies de 2-4 membres del que s'esperava. En canvi, s'esperava que un 7.8% més d'adults sols sobrevisqués.
+Es pot veure amb un nivell de significació del 5% com el tamany de la unitat familiar també va influir. Van sobreviure un 6.2% més de famílies de 2-4 membres del que s'esperava. En canvi, s'esperava que un 3.9% més d'adults sols sobrevisqués.
 
 Mitjançant els gràfics de barres, les taules de contingencia i els tests realitzats podem concloure:
 
