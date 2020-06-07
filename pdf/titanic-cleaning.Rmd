@@ -520,7 +520,7 @@ Destaquen les relacions entre el preu del bitllet i l'edat, i entre el preu del 
 
 
 ### Regressió logística
-Volem predir el fet de sobreviure o no, de manera que ens trobem amb una variable discreta, concretament binaria (0,1). Si utilitzéssim un model lineal per predir un grup binàri estariem obtenint un model erroni.
+Volem predir el fet de sobreviure o no segons les característiques dels passatgers, de manera que ens trobem amb una variable discreta, concretament binaria (0,1). Si utilitzéssim un model lineal per predir un grup binàri estariem obtenint un model erroni.
 
 ```{r}
 #Selecció de dades per la regressió: 
