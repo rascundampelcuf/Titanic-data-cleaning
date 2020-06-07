@@ -518,6 +518,12 @@ Destaquen les relacions entre el preu del bitllet i l'edat, i entre el preu del 
 Volem predir el fet de sobreviure o no, de manera que ens trobem amb una variable discreta, concretament binaria (0,1). Si utilitzéssim un model lineal per predir un grup binàri estariem obtenint un model erroni.
 
 ```{r}
+
+## Converting "Survived","Pclass" to factors
+for (i in c("Survived","Pclass")){
+  titanic_data[,i]=as.factor(titanic_data[,i])
+}
+
 # Divisió del conjunt de dades en dos subconjunts, un de train i l'altre de test
 train <- titanic_data[1:667,]
 test <- titanic_data[668:889,]
@@ -534,6 +540,7 @@ fitted.results <- ifelse(fitted.probabilities > 0.5, 1, 0)
 
 # Matriu de confusió
 confusionMatrix(table(fitted.results, test$Survived))
+
 ```
 
 Mitjançant els resultats del model podem veure com el fet de pertanyer a la clase 2 o 3 està relacionat amb el fet de sobreviure, com també el genère, on el fet de ser home té un efecte negatiu.
