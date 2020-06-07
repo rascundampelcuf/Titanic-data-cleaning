@@ -142,6 +142,9 @@ boxplot.stats(titanic_data$Fare)$out
 #En el cas de Fare, són valors que es poden haver donat també, ja que el preu que hagi pugut pagar cada passatger pot tenir una gran oscil.lació, i es poden donar valors de 0 a 500 perfectament.
 #Es per això, que tot i haver-los detectat, hem decidit no tractar-los de manera diferent a com han estat recollits.
 
+#Exportació del nou dataset
+write.csv(titanic_data, "../data/titanic_data_clean.csv")
+
 ## ---- echo=TRUE----------------------------------------------------------
 
 

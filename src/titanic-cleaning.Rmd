@@ -221,6 +221,13 @@ En el cas de Fare, són valors que també es poden haver donat, ja que el preu q
 
 Es per això, que tot i haver-los detectat, hem decidit no tractar-los de manera diferent a com han estat recollits.
 
+## Exportació de les dades preprocessades
+Una vegada hem realitzat sobre el conjunt de dades original els procediments d'integració, validació i neteja de les dades, procedim a guardar aquestes en un nou fitxer anomenat `titanic_data_clean.csv`.
+
+```{r}
+write.csv(titanic_data, "../data/titanic_data_clean.csv")
+```
+
 # Anàlisi de les dades
 ## Comprovació de la normalitat i homogeneïtat de la variància
 Per comprovar si les variables *Age* i *Fare* segueixen una distribució normal utilitzem la funció `qqnorm` per tenir una aproximació. Aquesta funció comparara els quartils de la distribució observada amb els quartils teòrics d'una distribució normal. Com més s'aproximen a les dades d'una normal, més alineats es trobaran els punts al voltant de la recta.
