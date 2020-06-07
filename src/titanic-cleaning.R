@@ -271,28 +271,29 @@ chisq.test(x = table_Class)$residuals
 #S'esperava un 4.7% més de supervivents de la classe 3, en canvi de la classe 1 s'esperava un 5.8% menys. 
 
 
-# A continuació discretitzarem la variable edat. El nombre d'intervals escollits=3, utilitzarem el mètode d'igual freqüència per tal de mantenir la mateixa freqüència. 
-dis1<-table(discretize(x=titanic_data1$Age, method = "frequency", breaks =4, include.lowest = TRUE))
+# A continuació discretitzarem la variable edat. El nombre d'intervals escollits=4, utilitzarem el mètode d'igual freqüència per tal de mantenir la mateixa freqüència. 
+dis1 <- table(discretize(x = titanic_data$Age, method = "frequency", breaks = 4, include.lowest = TRUE))
 dis1
-titanic_data1$AgeD[titanic_data1$Age <21] <- "Menors de 21 anys"
-titanic_data1$AgeD[titanic_data1$Age >= 21 & titanic_data1$Age < 28] <- "Entre 21 i 28 anys"
-titanic_data1$AgeD[titanic_data1$Age >= 28 & titanic_data1$Age < 39] <- "Entre 28 i 39 anys"
-titanic_data1$AgeD[titanic_data1$Age>= 39] <- "Majors de 39"
+titanic_data$AgeD[titanic_data$Age < 22] <- "Menors de 22 anys"
+titanic_data$AgeD[titanic_data$Age >= 22 & titanic_data$Age < 26] <- "Entre 22 i 25 anys"
+titanic_data$AgeD[titanic_data$Age >= 26 & titanic_data$Age < 37] <- "Entre 26 i 37 anys"
+titanic_data$AgeD[titanic_data$Age >= 37] <- "Majors de 37"
+```
 
-# Tot seguit fem de la nova variable un factor
-titanic_data1$AgeD <-
-  factor(
-    titanic_data1$AgeD,
-    ordered = FALSE,
-    levels = c(
-      "Menors de 21 anys",
-      "Entre 21 i 28 anys",
-      "Entre 28 i 39 anys",
-      "Majors de 39"
-    )
+Tot seguit fem de la nova variable un factor.
+
+```{r}
+titanic_data$AgeD <- factor(
+  titanic_data$AgeD,
+  ordered = FALSE,
+  levels = c(
+    "Menors de 22 anys",
+    "Entre 22 i 25 anys",
+    "Entre 26 i 37 anys",
+    "Majors de 37"
   )
-
-summary(titanic_data1$AgeD)
+)
+summary(titanic_data$AgeD)
 
 ## Hi ha diferències en la supervivència segons l'edat?
 ##cal fer discretització d'edat (en rangs)
@@ -305,11 +306,9 @@ fisher.test(table_AgeD, alternative = "two.sided")
 chisq.test(x = table_AgeD)
 chisq.test(x = table_AgeD)$residuals
 chisq.test(x = table_AgeD)$stdres
-#Podem afirmar novament amb un 95% de confiança que hi ha relació entre ambdues variables.
-#S'esperava un 2,3% més de supervivents en la franja d'edat 21-28 anys, en canvi, s'esperava un 2% menys en la de menors de 21.
+#Podem afirmar de nou amb un 95% de confiança que hi ha relació entre ambdues variables. S’esperava un 4,3% més de supervivents en la franja d’edat 22-25 anys, en canvi s’esperava un 2.6% menys en la de 26-37 anys. 
 
-
-##A més a més també ens interesava conèixer si la probabilitat de sobreviure tenia alguna relació amb el tamany de la família?
+##A més a més també ens interessava conèixer si la probabilitat de sobreviure tenia alguna relació amb el tamany de la família?
 #Creació nova variable: 
 titanic_data1$FamilySize <- titanic_data1$SibSp + titanic_data1$Parch +1;
 hist(titanic_data1$FamilySize)
@@ -346,14 +345,14 @@ fisher.test(table_Family, alternative = "two.sided")
 chisq.test(x = table_Family)
 chisq.test(x = table_Family)$residuals
 chisq.test(x = table_Family)$stdres
-#Podem veure amb un nivell de significació del 5%, com el tamany de la unita familiar tmabé va influir, van sobreviure un 9.7% més de famílies de 2-4 membres del que s'esperava, per contra, s'esperava que un 7.8% més d'adults sols sobrevisques.
+#Es pot veure amb un nivell de significació del 5% com el tamany de la unitat familiar també va influir. Van sobreviure un 6.2% més de famílies de 2-4 membres del que s’esperava. En canvi, s’esperava que un 3.9% més d’adults sols sobrevisqués. 
 
 
-##Mitjançant els gràfics de barres, les taules de contingencia i els tests realitzats podem concloure: 
-##La proporció d'homes i dones que van sobreviure és força diferent, homes: 109, dones: 385, si ens fixem en el % respecte el seu gènere, en les dones és del 83% mentre que pels homes és del 23%.
-##Referent a la classe en la que viatjaven, si ens fixem en el gràfic, el nombre de personas que més van sobreviure són els que viatjaven en 3 classe, cal dir, però que, el nombre de passatgers d'aquesta classe és molt major. Si ens fixem en el % dins de cada classe, són els de primera classe els que tenen una ràtio més alta de supervivència.
-##Cal destacar també que la proporció d'adults sols és més del 50%, i que la franja on hi trobem més viatjants és la franja d'edat entre 21 i 28 anys.
-##Després de realitzar els 4 test, podem veure que les diferències són significatives, i que tan l'edat, la classe en la que viatjaven, el gènere com el tamany de la unitat familiar van ser significatius per la superviència.
+
+#Mitjançant els gràfics de barres, les taules de contingencia i els tests realitzats podem concloure: 
+##La proporció d’homes i dones que van sobreviure és força diferent(homes: 109, dones: 385). Si ens fixem en el % respecte el seu gènere, per les dones és del 83% mentre que pels homes és del 13%. 
+##Referent a la classe en la que viatjaven, si ens fixem en el gràfic, el nombre de persones que més van sobreviure són els que viatjaven en 3a classe. Cal dir que el nombre de passatgers d’aquesta classe és molt major. Si ens fixem en el % dins de cada classe, són els de 1a classe els que tenen una ràtio més alta de supervivència. 
+##Cal destacar també que la proporció d’adults sols és més del 50%, i que la franja on hi trobem més viatjants és la franja d’edat entre 26 i 37 anys.  ##Després de realitzar els 4 tests es pot observar que les diferències són significatives, i que tant l’edat, la classe en la que viatjaven, el gènere com el tamany de la unitat familiar van ser significatius per la superviència. 
 par(mfrow=c(2,2))
 plot(table_Class, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Class")
 plot(table_Sex, col = c("darksalmon","darkseagreen4"), main = "Survived vs. Sex")
@@ -363,7 +362,8 @@ plot(table_Family, col = c("darksalmon","darkseagreen4"), main = "Survived vs. F
 
 # Correlació:
 aux_data <- titanic_data[, c("Age", "SibSp", "Parch", "Fare")]
-#A continuació podem plasmar la idea anterior gràficament, calculant prèviament la matriu de correlació i guardant-la en un objecte. 
+#A continuació hem analitzat la relació entre les diferents característiques dels passatgers, tot calculant prèvi- ament la matriu de correlació i guardant-la en un objecte. 
+
 M<-cor(aux_data)
 corrplot(M, 
          method = "color",
@@ -381,40 +381,31 @@ rcorr(as.matrix(aux_data))
 
 
 # Regressió logística: volem predir el fet de sobreviure o no, de manera que ens trobem amb una variable discreta, concretament binaria (0,1), si utilitzessim una model lineal per predir un grup binàri estariem obtenint un model erroni.
-## Check number of uniques values for each of the column to find out columns which we can convert to factors
-sapply(titanic_data, function(x) length(unique(x)))
 
-## Converting "Survived","Pclass" to factors
-for (i in c("Survived","Pclass")){
-  titanic_data1[,i]=as.factor(titanic_data1[,i])
-}
+#Selecció de dades per la regressió: 
+titanic_data <- select(titanic_data, -c(FamilySize, AgeD, SibSp, Parch, FamilySizeD))
+# Divisió del conjunt de dades en dos subconjunts, un de train i l'altre de test
+train <- titanic_data[1:667,]
+test <- titanic_data[668:889,]
 
-## Splitting training and test data
-train <- titanic_data1[1:667,]
-test <- titanic_data1[668:889,]
-
-##Model
-model <- glm(Survived ~.,family=binomial(link='logit'),data=train)
-
-## Model Summary
+# Creació del model de predicció
+model <- glm(Survived ~., family = binomial(link = 'logit'), data = train)
 summary(model)
 
-## Predicting Test Data
-result <- predict(model,newdata=test,type='response')
-result <- ifelse(result > 0.5,1,0)
+# Predicció de les dades
+result <- predict(model, newdata = test, type = 'response')
+result <- ifelse(result > 0.5, 1, 0)
+fitted.probabilities <- predict(model, newdata = test, type = 'response')
+fitted.results <- ifelse(fitted.probabilities > 0.5, 1, 0)
 
-fitted.probabilities<-predict(model, newdata=test, type='response')
-fitted.results <- ifelse(fitted.probabilities>0.5, 1,0)
-
-## Confusion matrix and statistics
+# Matriu de confusió
 confusionMatrix(table(fitted.results, test$Survived))
 
+#Mitjançant els resultats del model podem veure com el fet de pertanyer a la classe 2 o 3 està relacionat amb el fet de sobreviure, com també el genère, on el fet de ser home té un efecte negatiu igual que viatjar en 2a i 3a classes. 
+#L'edat també té un efecte negatiu en la supervivencia: a major edat menor probabilitat de sobreviure.
+#Mitjançant l'intercept, podem veure el que hem anat confirmant amb els test d'independència i els gràfics, i és que el fet de ser dona i viatjar a la classe 1 té una major probabilitat de supervivència.
+#A través de la matriu de confusió es pot veure com el model té un 82% de precisió en la predicció.
 
-
-#Mitjançant els resultats del model podem veure com el fet de pertanyer a la clase 2 o 3 està relacionat amb el fet de sobreviure, com també el genère, on el fet de ser home té un efecte negatiu. 
-#L'edat també té un efecte negatiu en la supervivencia, és a dir, a major edat menor probailitat de sobreviure. 
-#Mitjançant l'intercept, podem veure el que hem anat confirmant amb els test d'independència i els gràfics, i és que, el fet de ser dona i viatjar a la classe 1 té una major probabilitat de supervivència. 
-#A través de la matriu de confusió podem veure com el model el model ha encertat un 83% dels casos. 
 ## ---- echo=TRUE---------------------------------------------------------------------------------
 
 
@@ -444,19 +435,6 @@ corrplot(M,
 table(test$Survived, fitted.results)
 ## ---- echo=TRUE-------------------------------------------------------------------------------
 
-
-
-##6----CONCLUSIÓ-------------------------------------------------------------------------------
-
-##Mitjançant els gràfics de barres, les taules de contingencia i els tests realitzats podem concloure: 
-#Que els passatgers que van sobreviure és menys del 50%, concretament només representen un 37% del total. 
-##La proporció d'homes i dones que van sobreviure és força diferent, homes: 109, dones: 385, si ens fixem en el % respecte el seu gènere, en les dones és del 83% mentre que pels homes és del 23%.
-##Referent a la classe en la que viatjaven, el nombre de personas que més van sobreviure són els que viatjaven en 3 classe, cal dir, però que, el nombre de passatgers d'aquesta classe és molt major. Si ens fixem en el % dins de cada classe, són els de primera classe els que tenen una ràtio més alta de supervivència.
-##Cal destacar també que la proporció d'adults sols és més del 50%, i que la franja on hi trobem més viatjants és la franja d'edat entre 21 i 28 anys.
-##Després de realitzar els 4 test d'independència, podem veure que les diferències són significatives, i que tan l'edat, la classe en la que viatjaven, el gènere com el tamany de la unitat familiar van ser rellevants per la superviència.
-#Van sobreviure més dones que homes, la classe amb majors supervivents és la Classe 1, pel que fa l'edat s'esperava més supervivents entre la franja dels 21-28 d'anys de la que es va produir, i finalment, pel que fa el tamany familiar també va tenir un paper important, on destaquen les famílies de 2-4 membres destacan com a supervivents, m'entre que pel que fa els adults que viatjeven sols s'esperava una ràtio de supervients major.
-#Mitjaçant la regressió logística, hem pogut comprovar novament, el que hem anat veient al llarg de tots els gràfics, taules i test, i és doncs, que la supervivència no va ser igual per tots els passatgers, que l'edat, els homes com les classes 2 i 3 van tenir especialment un paper negatiu, fent que la probabilitat de sobreviure fos menor. 
-#També podem extreure que el preu pagat del tiquet i la porta per la que van embarcar no va afectar en la supervivència. 
 
 ## ---- echo=TRUE-------------------------------------------------------------------------------
 #bibliografia

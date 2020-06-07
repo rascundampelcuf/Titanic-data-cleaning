@@ -580,12 +580,12 @@ Mitjançant els diferents anàlisi estadístics podem concloure:
 
 * Que els passatgers que van sobreviure són menys del 50%, concretament només representen un 37% del total.
 *La proporció d'homes i dones que van sobreviure és força diferent, on predominen les dones. Si ens fixem en el % respecte el seu gènere, per les dones és del 83% mentre que pels homes és tan sols del 13%.
-* Referent a la classe en la que viatjaven, el nombre de persones que més van sobreviure són els que viatjaven en 3a classe. Cal dir que el nombre de passatgers d'aquesta classe és molt major. Si ens fixem en el % dins de cada classe, són els de 1a classe els que tenen una ràtio més alta de supervivència.
+* Referent a la classe en la que viatjaven, les persones que més van sobreviure són les que viatjaven en 3a classe. Cal dir que el nombre de passatgers d'aquesta classe és molt major. Si ens fixem en el % dins de cada una, són els de 1a classe els que tenen una ràtio més alta de supervivència.
 * Cal destacar també que la proporció d'adults sols és més del 50%, i que la franja on hi trobem més viatjants és la franja d'edat entre 26 i 37 anys.
-* Em pogut comprovar com tan l'edat, la classe en la que viatjaven, el gènere, com el tamany de la unitat familiar van ser significatius per la superviència, és a dir, hi ha relació entre totes elles i el fet de sobreviure.
-* Concretament, van sobreviure més dones que homes, la classe amb majors supervivents és la Classe 1, pel que fa l'edat s'esperava més supervivents entre la franja dels 22-25 d'anys de la que es va produir, i finalment, pel que fa el tamany familiar també va tenir un paper important, on destaquen les famílies de 2-4 membres destacan com a supervivents, m'entre que pel que fa els adults que viatjeven sols s'esperava una ràtio de supervients major.
-* Mitjaçant la regressió logística, hem pogut comprovar novament, el que hem anat veient al llarg de tots els gràfics, taules i test, i és doncs, que la supervivència no va ser igual per tots els passatgers, que a major edat, els homes, com el fet de viatjar en les classes 2 i 3 van tenir un paper negatiu, fent que la probabilitat de sobreviure fos menor. 
-* També podem extreure que el preu pagat del tiquet i la porta per la que van embarcar no va ser significativa per la supervivència. 
+* Em pogut comprovar estadísticament com tan l'edat, la classe en la que viatjaven, el gènere, com el tamany de la unitat familiar van ser significatius per la superviència, és a dir, hi ha relació entre totes elles i el fet de sobreviure.
+* Concretament, van sobreviure més dones que homes, la classe amb majors supervivents és la Classe 1, pel que fa l'edat s'esperava més supervivents entre la franja dels 22-25 d'anys de la que es va produir, i finalment, pel que fa el tamany familiar també va tenir un paper important, on destaquen les famílies de 2-4 membres com a supervivents, m'entre que pel que fa els adults que viatjeven sols s'esperava una ràtio de supervients major.
+* Mitjaçant la regressió logística, hem pogut comprovar novament, el que hem anat veient al llarg de tots els gràfics, taules i test, i és doncs, que la supervivència no va ser igual per tots els passatgers, tan les persones més grans, els homes, com el fet de viatjar en 2a i 3a classe van tenir un paper negatiu, fent que la probabilitat de sobreviure fos menor. 
+* També podem extreure que el preu pagat del tiquet i la porta per la qual van embarcar no va ser significativa per la supervivència. 
 
 
 # Recursos
