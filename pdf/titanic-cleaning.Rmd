@@ -547,7 +547,7 @@ Mitjançant els resultats del model podem veure com el fet de pertanyer a la cla
 
 L'edat també té un efecte negatiu en la supervivencia: a major edat menor probabilitat de sobreviure.
 
-Mitjançant l'intercept, podem veure el que hem anat confirmant amb els test d'independència i els gràfics, i és que el fet de ser dona i viatjar a la classe 1 té una major probabilitat de supervivència.
+Mitjançant l'intercept, podem veure el que hem anat confirmant amb els test d'independència i els gràfics, i és que el fet de ser dona, jove i viatjar en primera classe té una major probabilitat de supervivència.
 
 A través de la matriu de confusió es pot veure com el model té un 82% de precisió en la predicció.
 
@@ -584,7 +584,7 @@ Mitjançant els diferents anàlisi estadístics podem concloure:
 * Cal destacar també que la proporció d'adults sols és més del 50%, i que la franja on hi trobem més viatjants és la franja d'edat entre 26 i 37 anys.
 * Em pogut comprovar estadísticament com tan l'edat, la classe en la que viatjaven, el gènere, com el tamany de la unitat familiar van ser significatius per la superviència, és a dir, hi ha relació entre totes elles i el fet de sobreviure.
 * Concretament, van sobreviure més dones que homes, la classe amb majors supervivents és la Classe 1, pel que fa l'edat s'esperava més supervivents entre la franja dels 22-25 d'anys de la que es va produir, i finalment, pel que fa el tamany familiar també va tenir un paper important, on destaquen les famílies de 2-4 membres com a supervivents, m'entre que pel que fa els adults que viatjeven sols s'esperava una ràtio de supervients major.
-* Mitjaçant la regressió logística, hem pogut comprovar novament, el que hem anat veient al llarg de tots els gràfics, taules i test, i és doncs, que la supervivència no va ser igual per tots els passatgers, tan les persones més grans, els homes, com el fet de viatjar en 2a i 3a classe van tenir un paper negatiu, fent que la probabilitat de sobreviure fos menor. 
+* Mitjaçant la regressió logística, hem pogut comprovar novament, el que hem anat veient al llarg de tot l'anàlisi, i és doncs, que la supervivència no va ser igual per tots els passatgers, tan les persones més grans, els homes, com el fet de viatjar en 2a i 3a classe van tenir un paper negatiu, fent que la probabilitat de sobreviure fos menor. 
 * També podem extreure que el preu pagat del tiquet i la porta per la qual van embarcar no va ser significativa per la supervivència. 
 
 
