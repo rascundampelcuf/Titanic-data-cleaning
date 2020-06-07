@@ -314,6 +314,7 @@ grid.arrange(plotByClass, plotByAge, plotBySex, ncol = 2)
 ```
 
 **Criteris d'èxit**
+A continuació per tal de conèixer les característiques del passatgers i la possibilitat de supervivència hem realitzat una sèrie de test.
 
 1. Van sobreviure més del 50% dels passatgers? Existeix diferència significativa per un nivell de significació del 5%?
 
@@ -366,15 +367,16 @@ chisq.test(x = table_Class)$residuals
 
 Podem afirmar de nou amb un 95% de confiança que hi ha relació entre ambdues variables, on s'esperava un 4.7% més de supervivents de la classe 3, en canvi de la classe 1 s'esperava un 5.8% menys. 
 
-A continuació es discretitzarà la variable *Age*. El nombre d'intervals escollits és 3 i s'utilitzarà el mètode d'igual freqüència per tal de mantenir sempre la mateixa freqüència.
+
+A continuació es discretitzarà la variable *Age*. El nombre d'intervals escollits és 4 i s'utilitzarà el mètode d'igual freqüència per tal de mantenir sempre la mateixa freqüència.
 
 ```{r}
 dis1 <- table(discretize(x = titanic_data$Age, method = "frequency", breaks = 4, include.lowest = TRUE))
 dis1
-titanic_data$AgeD[titanic_data$Age < 21] <- "Menors de 21 anys"
-titanic_data$AgeD[titanic_data$Age >= 21 & titanic_data$Age < 28] <- "Entre 21 i 28 anys"
-titanic_data$AgeD[titanic_data$Age >= 28 & titanic_data$Age < 39] <- "Entre 28 i 39 anys"
-titanic_data$AgeD[titanic_data$Age >= 39] <- "Majors de 39"
+titanic_data$AgeD[titanic_data$Age < 22] <- "Menors de 22 anys"
+titanic_data$AgeD[titanic_data$Age >= 22 & titanic_data$Age < 26] <- "Entre 22 i 25 anys"
+titanic_data$AgeD[titanic_data$Age >= 26 & titanic_data$Age < 37] <- "Entre 26 i 37 anys"
+titanic_data$AgeD[titanic_data$Age >= 37] <- "Majors de 37"
 ```
 
 Tot seguit fem de la nova variable un factor.
@@ -384,10 +386,10 @@ titanic_data$AgeD <- factor(
   titanic_data$AgeD,
   ordered = FALSE,
   levels = c(
-    "Menors de 21 anys",
-    "Entre 21 i 28 anys",
-    "Entre 28 i 39 anys",
-    "Majors de 39"
+    "Menors de 22 anys",
+    "Entre 22 i 25 anys",
+    "Entre 26 i 37 anys",
+    "Majors de 37"
   )
 )
 summary(titanic_data$AgeD)
@@ -410,7 +412,7 @@ chisq.test(x = table_AgeD)$residuals
 chisq.test(x = table_AgeD)$stdres
 ```
 
-Podem afirmar de nou amb un 95% de confiança que hi ha relació entre ambdues variables. S'esperava un 2,3% més de supervivents en la franja d'edat 21-28 anys, en canvi s'esperava un 2% menys en la de menors de 21.
+Podem afirmar de nou amb un 95% de confiança que hi ha relació entre ambdues variables. S'esperava un 4,3% més de supervivents en la franja d'edat 22-25 anys, en canvi s'esperava un 1,2% menys en la de menors de 22.
 
 Finalment, ens interessava conèixer si la probabilitat de sobreviure tenia alguna relació amb el tamany de la família?
 
