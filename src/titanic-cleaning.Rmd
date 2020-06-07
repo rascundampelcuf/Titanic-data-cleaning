@@ -598,3 +598,10 @@ Mitjançant els diferents anàlisi estadístics podem concloure:
 7. Amat Rodrigo, J. (2016). RPubs - Test exacto de Fisher, chi-cuadrado de Pearson, McNemar y Q-Cochran. https://rpubs.com/Joaquin_AR/220579
 8. Ramos Lorenzo, C. (2019). RPubs - Logistic Regression. https://rpubs.com/MrCristianrl/500969
 
+# Taula de contribucions
+
+|       Contribucions       |                Signa               |
+|:-------------------------:|:----------------------------------:|
+|       Recerca prèvia      | Mireia Olivella, Gabriel Izquierdo |
+| Redacció de les respostes | Mireia Olivella, Gabriel Izquierdo |
+|  Desenvolupament del codi | Mireia Olivella, Gabriel Izquierdo |
