@@ -110,11 +110,12 @@ head(titanic_data)
 sapply(titanic_data, function(x) class(x))
 ```
 
-Podem observar que els tipus de dades assignats automàticament per R a les nostres variables no s'acaben de correspondre amb el domini d'aquestes. Aquest és el cas de l'atribut `Survived`. R detecta que es tracta d'un *integer*, quan en realitat es tracta d'un *factor*, pel que procedim a assignar-li el tipus que nosaltres volem.
+Podem observar que els tipus de dades assignats automàticament per R a les nostres variables no s'acaben de correspondre amb el domini d'aquestes. Aquest és el cas dels atributs `Survived` i `Pclass`. R detecta que es tracta d'un *integer* quan en realitat es tracta d'un *factor*, pel que procedim a assignar-li el tipus que nosaltres volem.
 
 ```{r}
-# Canvi del tipus del camp 'Survived'
+# Canvi del tipus del camp 'Survived' i 'Pclass'
 titanic_data$Survived <- factor(titanic_data$Survived)
+titanic_data$Pclass <- factor(titanic_data$Pclass)
 ```
 
 
@@ -516,15 +517,10 @@ Volem predir el fet de sobreviure o no, de manera que ens trobem amb una variabl
 
 ```{r}
 #Selecció de dades per la regressió: 
-titanic_data <- select(titanic_data, -c(FamilySize, AgeD, SibSp,Parch, FamilySizeD))
+titanic_data <- select(titanic_data, -c(FamilySize, AgeD, SibSp, Parch, FamilySizeD))
 # Divisió del conjunt de dades en dos subconjunts, un de train i l'altre de test
 train <- titanic_data[1:667,]
 test <- titanic_data[668:889,]
-
-#Convertim "Survived","Pclass" en factors
-for (i in c("Survived","Pclass")){
-  titanic_data[,i]=as.factor(titanic_data[,i])
-}
 
 # Creació del model de predicció
 model <- glm(Survived ~., family = binomial(link = 'logit'), data = train)
@@ -532,13 +528,12 @@ summary(model)
 
 # Predicció de les dades
 result <- predict(model, newdata = test, type = 'response')
-result <- ifelse(result > 0.5,1,0)
+result <- ifelse(result > 0.5, 1, 0)
 fitted.probabilities <- predict(model, newdata = test, type = 'response')
 fitted.results <- ifelse(fitted.probabilities > 0.5, 1, 0)
 
 # Matriu de confusió
 confusionMatrix(table(fitted.results, test$Survived))
-
 ```
 
 Mitjançant els resultats del model podem veure com el fet de pertanyer a la classe 2 o 3 està relacionat amb el fet de sobreviure, com també el genère, on el fet de ser home té un efecte negatiu igual que viatjar en 2a i 3a classes. 
