@@ -7,7 +7,7 @@
 ## Description
 This practice has been completed during the PRAC2 of the subject Typology and life cycle of the data of the master's degree in Data Science of the *Universitat Oberta de Catalunya* (UOC).
 
-The objective of this PRAC was to analyze, validate and clean a dataset in R. The chosen dataset for this practice is the dataset **Titanic: Machine Learning from Disaster** from [Kaggle]{https://www.kaggle.com/c/titanic}.
+The objective of this PRAC was to analyze, validate and clean a dataset in R. The chosen dataset for this practice is the dataset **Titanic: Machine Learning from Disaster** from [Kaggle](https://www.kaggle.com/c/titanic).
 
 ---
 
